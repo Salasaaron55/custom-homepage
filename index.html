@@ -94,10 +94,10 @@
     .dlg-body{ padding:16px 18px; display:grid; gap:12px; }
     .field{ display:grid; gap:6px; }
     label{ font-size:12px; color:var(--muted); }
-    input[type="text"], input[type="url"], input[type="file"]{
-      width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
-      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
-    }
+    input[type="text"], input[type="url"], input[type="file"]{ width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
+    .help{ font-size:12px; color:var(--muted); }
+    #iconPreview{ width:64px; height:64px; border-radius:12px; background:var(--card); border:1px solid color-mix(in oklab, var(--muted) 25%, transparent); object-fit:contain; display:none; }
     .dlg-foot{ padding:14px 18px; border-top:1px solid color-mix(in oklab, var(--muted) 25%, transparent); display:flex; gap:10px; justify-content:flex-end; }
 
     footer{ color:var(--muted); text-align:center; padding: 10px 0 22px; font-size: 12px; }
@@ -151,9 +151,11 @@
           <input id="url" name="url" type="url" inputmode="url" placeholder="https://example.com" required />
         </div>
         <div class="field">
-          <label for="icon">Icon URL (optional)</label>
-          <input id="icon" name="icon" type="text" placeholder="URL or data:image/png;base64,…" />
+          <label for="icon">Icon</label>
+          <input id="icon" name="icon" type="text" placeholder="Paste URL or data:image/png;base64,…" />
           <input id="iconFile" name="iconFile" type="file" accept="image/*" />
+          <div class="help">Tip: Click <em>Choose File</em> to embed a local PNG/JPG/WebP. We convert it to a data URL so it works offline.</div>
+          <img id="iconPreview" alt="Icon preview" />
         </div>
       </div>
       <div class="dlg-foot">
@@ -181,6 +183,7 @@
     const urlInput = document.getElementById('url');
     const iconInput = document.getElementById('icon');
     const iconFile = document.getElementById('iconFile');
+    const iconPreview = document.getElementById('iconPreview');
     const addBtn = document.getElementById('addBtn');
     const editToggle = document.getElementById('editToggle');
     const exportBtn = document.getElementById('exportBtn');
@@ -198,7 +201,10 @@
       return await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error('read fail')); fr.readAsDataURL(file); });
     }
 
-    if(iconFile){ iconFile.addEventListener('change', async (e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const d=await fileToDataURL(f); iconInput.value=d; } finally{ e.target.value=''; } }); }
+    function showPreview(src){ if(src){ iconPreview.src = src; iconPreview.style.display='inline-block'; } else { iconPreview.removeAttribute('src'); iconPreview.style.display='none'; } }
+
+    if(iconFile){ iconFile.addEventListener('change', async (e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const d=await fileToDataURL(f); iconInput.value=d; showPreview(d);} finally{ e.target.value=''; } }); }
+    iconInput.addEventListener('input', ()=> showPreview(iconInput.value.trim()));
 
     function starterData(){
       return [
@@ -330,11 +336,13 @@
         nameInput.value = l?.name || '';
         urlInput.value = l?.url || '';
         iconInput.value = l?.icon || '';
+        showPreview(iconInput.value.trim());
         dlgTitle.textContent = 'Edit Link';
       } else {
         nameInput.value = '';
         urlInput.value = '';
         iconInput.value = '';
+        showPreview('');
         dlgTitle.textContent = 'Add Link';
       }
       editor.showModal();
