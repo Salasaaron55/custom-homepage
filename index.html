@@ -150,6 +150,10 @@
           <label for="url">URL</label>
           <input id="url" name="url" type="url" inputmode="url" placeholder="https://example.com" required />
         </div>
+        <div class="field">
+          <label for="icon">Icon URL (optional)</label>
+          <input id="icon" name="icon" type="url" inputmode="url" placeholder="https://… or ./icons/mysite.png" />
+        </div>
       </div>
       <div class="dlg-foot">
         <button class="btn" value="cancel">Cancel</button>
@@ -174,6 +178,7 @@
     const dlgTitle = document.getElementById('dlgTitle');
     const nameInput = document.getElementById('name');
     const urlInput = document.getElementById('url');
+    const iconInput = document.getElementById('icon');
     const addBtn = document.getElementById('addBtn');
     const editToggle = document.getElementById('editToggle');
     const exportBtn = document.getElementById('exportBtn');
@@ -195,7 +200,6 @@
         { id: uid(), name:'Gmail', url:'https://mail.google.com' },
         { id: uid(), name:'GitHub', url:'https://github.com' },
         { id: uid(), name:'ChatGPT', url:'https://chat.openai.com' },
-        { id: uid(), name: 'My Local Tool', url: 'http://localhost:3000', icon: 'icons/tool.png' },
       ];
     }
 
@@ -238,17 +242,13 @@
 
         const fav = document.createElement('div');
         fav.className = 'favicon';
-        const favUrl = link.icon || faviconFor(link.url, link.name);
-        if (favUrl) {
+        const favUrl = faviconFor(link.url, link.name);
+        if(favUrl){
           const img = document.createElement('img');
-          img.src = favUrl;
-          img.alt = '';
-          img.width = 28;
-          img.height = 28;
-          img.style.borderRadius = '8px';
+          img.src = favUrl; img.alt = ''; img.width=28; img.height=28; img.style.borderRadius='8px';
           fav.replaceChildren(img);
         } else {
-          fav.textContent = (link.name || '?').slice(0, 1).toUpperCase();
+          fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
         }
 
         const meta = document.createElement('div');
@@ -461,4 +461,3 @@
   </script>
 </body>
 </html>
-
