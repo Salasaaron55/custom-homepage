@@ -6,139 +6,114 @@
   <title>My Start Page</title>
   <style>
     :root{
-      --bg: #0b0c0f;
-      --bg-elev: #12141a;
-      --text: #e6e9ef;
-      --muted: #9aa3b2;
-      --accent: #4f8cff;
-      --card: #171922;
-      --ring: #4f8cff55;
-      --danger: #ff5c7a;
-      --ok: #26c281;
+      --bg:#0b0c0f; --bg-elev:#12141a; --text:#e6e9ef; --muted:#9aa3b2; --accent:#4f8cff;
+      --card:#171922; --ring:#4f8cff55; --danger:#ff5c7a; --ok:#26c281;
     }
     @media (prefers-color-scheme: light){
       :root{
-        --bg: #f7f8fb;
-        --bg-elev: #fff;
-        --text: #0c0d0f;
-        --muted: #5a6473;
-        --accent: #2b6cff;
-        --card: #ffffff;
-        --ring: #2b6cff44;
-        --danger: #d62839;
-        --ok: #209f5e;
+        --bg:#f7f8fb; --bg-elev:#fff; --text:#0c0d0f; --muted:#5a6473; --accent:#2b6cff;
+        --card:#ffffff; --ring:#2b6cff44; --danger:#d62839; --ok:#209f5e;
       }
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color:var(--text); background: radial-gradient(1200px 800px at 100% -10%, #2a2f45 0%, transparent 60%), var(--bg);
+      margin:0; font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 100% -10%, #2a2f45 0%, transparent 60%), var(--bg);
       display:flex; flex-direction:column; min-height:100%;
     }
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter: saturate(140%) blur(8px);
+    header{ position:sticky; top:0; z-index:10; backdrop-filter:saturate(140%) blur(8px);
       background: color-mix(in oklab, var(--bg-elev) 70%, transparent);
-      border-bottom: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+      border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent);
     }
-    .wrap{ max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:16px; }
     .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .title{ font-weight:700; letter-spacing:.2px; font-size: clamp(18px, 3vw, 22px); margin-right:auto; display:flex; align-items:center; gap:10px; }
-    .title input{
-      background: transparent; border:none; outline:none; color:var(--text); font: inherit; border-bottom:1px dashed color-mix(in oklab, var(--text) 40%, transparent);
-      width: min(360px, 50vw);
+    .title{ font-weight:700; letter-spacing:.2px; font-size:clamp(18px,3vw,22px); margin-right:auto; display:flex; align-items:center; gap:10px; }
+    .title input{ background:transparent; border:none; outline:none; color:var(--text); font:inherit;
+      border-bottom:1px dashed color-mix(in oklab, var(--text) 40%, transparent); width:min(360px, 50vw);
     }
     .btn{
-      appearance:none; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background: var(--bg-elev);
-      color:var(--text); padding:8px 12px; border-radius: 10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition: .15s ease;
+      appearance:none; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background:var(--bg-elev);
+      color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.15s ease;
     }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px -10px var(--ring); }
-    .btn[aria-pressed="true"], .btn.primary{ border-color: transparent; background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 20%, var(--bg-elev)), var(--accent)); color:white; }
-    .btn.danger{ background: linear-gradient(180deg, color-mix(in oklab, var(--danger) 15%, var(--bg-elev)), var(--danger)); color:white; border-color:transparent; }
-    .btn.flat{ background: transparent; border-color: transparent; }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 6px 18px -10px var(--ring); }
+    .btn[aria-pressed="true"], .btn.primary{ border-color:transparent; background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 20%, var(--bg-elev)), var(--accent)); color:#fff; }
+    .btn.danger{ background:linear-gradient(180deg, color-mix(in oklab, var(--danger) 15%, var(--bg-elev)), var(--danger)); color:#fff; border-color:transparent; }
+    .btn.flat{ background:transparent; border-color:transparent; }
 
     .grid{
       display:grid; gap:14px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      padding: 22px 16px 30px; width: min(1100px, 100%); margin: 0 auto; flex:1;
+      padding:22px 16px 30px; width:min(1100px, 100%); margin:0 auto; flex:1;
     }
 
-    /* Full-image card tile (fixed: rely on aspect-ratio for height) */
+    /* Full-image card tiles */
     .card{
-      position:relative;
-      background: var(--card);
+      position:relative; background:var(--card);
       border:1px solid color-mix(in oklab, var(--muted) 22%, transparent);
-      border-radius: 16px; overflow:hidden;
-      cursor:pointer;
-      display:block;
+      border-radius:16px; overflow:hidden; cursor:pointer; display:block;
     }
-    .card:hover{ box-shadow: 0 10px 30px -18px var(--ring); transform: translateY(-1px); }
+    .card:hover{ box-shadow:0 10px 30px -18px var(--ring); transform:translateY(-1px); }
 
-    /* The visual area: height is derived from width via aspect-ratio */
     .thumb{
       width:100%;
-      aspect-ratio: 16 / 10; /* controls card height; tweak if you want taller/shorter tiles */
+      aspect-ratio:16/10; /* adjust to taste */
       display:grid; place-items:center;
-      background:
-        linear-gradient(180deg, color-mix(in oklab, var(--bg) 70%, transparent), transparent),
-        var(--bg-elev);
+      background:linear-gradient(180deg, color-mix(in oklab, var(--bg) 70%, transparent), transparent), var(--bg-elev);
     }
     .thumb img{
-      width:100%;
-      height:100%;
-      object-fit: contain;   /* keeps aspect ratio, no cropping */
+      width:100%; height:100%;
+      object-fit:contain; /* change to 'cover' for edge-to-edge crop */
       display:block;
     }
 
     .fallback-initial{
-      font-weight:800; font-size: 48px; line-height:1; opacity:.9;
-      color: color-mix(in oklab, var(--text) 88%, transparent);
-      text-shadow: 0 2px 10px rgba(0,0,0,.35);
-      user-select:none;
+      font-weight:800; font-size:48px; line-height:1; opacity:.9;
+      color:color-mix(in oklab, var(--text) 88%, transparent);
+      text-shadow:0 2px 10px rgba(0,0,0,.35); user-select:none;
     }
 
     .caption{
       position:absolute; left:0; right:0; bottom:0;
-      background: linear-gradient(180deg, transparent, color-mix(in oklab, #000 55%, var(--bg-elev)));
-      padding: 10px 12px 12px;
-      display:flex; flex-direction:column; gap:2px;
+      background:linear-gradient(180deg, transparent, color-mix(in oklab, #000 55%, var(--bg-elev)));
+      padding:10px 12px 12px; display:flex; flex-direction:column; gap:2px;
     }
-    .name{ font-weight:700; text-shadow: 0 2px 10px rgba(0,0,0,.35); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .name{ font-weight:700; text-shadow:0 2px 10px rgba(0,0,0,.35); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .url{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-    /* Edit mode overlay controls */
+    /* Edit overlays */
     .edit-badges{ position:absolute; inset:10px auto auto 10px; display:flex; gap:6px; z-index:2; }
-    .pill{ font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); background: var(--bg-elev); color:var(--muted); }
+    .pill{ font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); background:var(--bg-elev); color:var(--muted); }
 
     .actions{ position:absolute; inset:10px 10px auto auto; display:flex; gap:6px; z-index:2; }
-    .icon-btn{ width:34px; height:34px; display:grid; place-items:center; border-radius:10px; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background: var(--bg-elev); cursor:pointer; }
-    .icon-btn:hover{ box-shadow: 0 6px 18px -10px var(--ring); }
+    .icon-btn{ width:34px; height:34px; display:grid; place-items:center; border-radius:10px; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background:var(--bg-elev); cursor:pointer; }
+    .icon-btn:hover{ box-shadow:0 6px 18px -10px var(--ring); }
 
-    .dragging{ opacity:.6; outline: 2px dashed var(--accent); }
-    .drop-target{ outline: 2px dashed var(--accent); outline-offset: 4px; }
+    .dragging{ opacity:.6; outline:2px dashed var(--accent); }
+    .drop-target{ outline:2px dashed var(--accent); outline-offset:4px; }
 
-    dialog{
-      border:none; border-radius: 16px; padding:0; box-shadow: 0 30px 60px -35px rgba(0,0,0,.6);
-      background: var(--bg-elev); color:var(--text); width:min(560px, 96vw);
+    dialog{ border:none; border-radius:16px; padding:0; box-shadow:0 30px 60px -35px rgba(0,0,0,.6);
+      background:var(--bg-elev); color:var(--text); width:min(560px, 96vw);
     }
     .dlg-head{ padding:16px 18px; border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent); font-weight:700; display:flex; justify-content:space-between; align-items:center; }
     .dlg-body{ padding:16px 18px; display:grid; gap:12px; }
     .field{ display:grid; gap:6px; }
     label{ font-size:12px; color:var(--muted); }
     input[type="text"], input[type="url"]{
-      width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
+      width:100%; padding:10px 12px; border-radius:10px; background:var(--bg); color:var(--text);
       border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
     }
     .icon-row{ display:grid; gap:8px; }
     .icon-tools{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .icon-preview{ width:48px; height:48px; border-radius:10px; border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); display:none; object-fit: contain; background: var(--bg); }
+    .icon-preview{ width:48px; height:48px; border-radius:10px; border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); display:none; object-fit:contain; background:var(--bg); }
     .hint{ font-size:11px; color:var(--muted); }
 
-    footer{ color:var(--muted); text-align:center; padding: 10px 0 22px; font-size: 12px; }
-    .search{ position: relative; flex: 1 1 260px; min-width: 220px; }
-    .search input{ width:100%; padding:10px 12px 10px 36px; border-radius:10px; background: var(--bg-elev); color: var(--text);
-      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
-    .search svg{ position:absolute; left:10px; top:50%; transform: translateY(-50%); opacity:.7 }
+    footer{ color:var(--muted); text-align:center; padding:10px 0 22px; font-size:12px; }
+    .search{ position:relative; flex:1 1 260px; min-width:220px; }
+    .search input{ width:100%; padding:10px 12px 10px 36px; border-radius:10px; background:var(--bg-elev); color:var(--text);
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+    }
+    .search svg{ position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.7 }
     .hidden{ display:none !important }
   </style>
 </head>
@@ -165,6 +140,7 @@
 
   <footer>Data is stored locally in your browser (localStorage). No servers involved.</footer>
 
+  <!-- Add/Edit Dialog -->
   <dialog id="editor">
     <form method="dialog" id="editorForm">
       <div class="dlg-head">
@@ -191,7 +167,7 @@
             </label>
             <button class="btn flat" type="button" id="clearIconBtn" title="Remove custom icon">🧹 Clear</button>
           </div>
-          <div class="hint">If no custom image is set, the site’s favicon is used. Cards display the image as large as possible without cropping or distortion.</div>
+          <div class="hint">By default the card shows a live screenshot of the site; custom icon overrides it. Screenshot refreshes after you visit a link.</div>
         </div>
       </div>
       <div class="dlg-foot">
@@ -208,7 +184,7 @@
     const STORE_KEY_V1 = 'favoriteLinks.v1';
     const TITLE_KEY = 'favoriteLinks.title';
 
-    /** @typedef {{id:string,name:string,url:string,icon?:string}} Link */
+    /** @typedef {{id:string,name:string,url:string,icon?:string,lastVisited?:number}} Link */
     /** @type {Link[]} */
     let links = [];
     let editMode = false;
@@ -256,7 +232,11 @@
       const url  = norm(x?.url);
       const icon = norm(x?.icon || '');
       const id   = norm(x?.id) || uid();
-      return icon ? { id, name, url, icon } : { id, name, url };
+      const lastVisited = typeof x?.lastVisited === 'number' ? x.lastVisited : undefined;
+      const base = { id, name, url };
+      if (icon) base.icon = icon;
+      if (lastVisited) base.lastVisited = lastVisited;
+      return base;
     }
     function migrate(){
       let v3 = readJSON(STORE_KEY_V3);
@@ -269,17 +249,21 @@
     }
 
     function load(){
-  links = migrate();
-  if (!Array.isArray(links) || !links.length) {
-    links = starterData();
-    save(); // ensure they persist
-  }
-  pageTitle.value = localStorage.getItem(TITLE_KEY) || 'My Start Page';
-}
-
+      links = migrate();
+      if (!Array.isArray(links) || !links.length) { links = starterData(); save(); }
+      pageTitle.value = localStorage.getItem(TITLE_KEY) || 'My Start Page';
+    }
     function save(){ localStorage.setItem(STORE_KEY_V3, JSON.stringify(links)); }
     function saveTitle(){ localStorage.setItem(TITLE_KEY, pageTitle.value); }
 
+    // ----- Preview helpers -----
+    function screenshotURL(url, cacheBust=0){
+      try{
+        const encoded = encodeURIComponent(url);
+        // thum.io free endpoint; tweak width/crop as you like
+        return `https://image.thum.io/get/width/800/crop/600/noanimate/${encoded}?cb=${cacheBust||0}`;
+      }catch{ return null; }
+    }
     function googleFavicon(url){
       try{
         const u = new URL(url);
@@ -300,42 +284,66 @@
         if(!editMode){
           card.setAttribute('role','link');
           card.tabIndex = 0;
-          card.addEventListener('click', ()=> window.location.assign(link.url));
-          card.addEventListener('auxclick', (e)=>{ if(e.button===1){ window.open(link.url, '_blank'); } });
-          card.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ window.location.assign(link.url); } });
+          card.addEventListener('click', ()=>{
+            // mark visit time so next load fetches a fresh screenshot
+            const i = links.findIndex(l=>l.id===link.id);
+            if(i>-1){ links[i].lastVisited = Date.now(); save(); }
+            window.location.assign(link.url);
+          });
+          card.addEventListener('auxclick', (e)=>{ if(e.button===1){
+            const i = links.findIndex(l=>l.id===link.id);
+            if(i>-1){ links[i].lastVisited = Date.now(); save(); }
+            window.open(link.url, '_blank');
+          }});
+          card.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){
+            const i = links.findIndex(l=>l.id===link.id);
+            if(i>-1){ links[i].lastVisited = Date.now(); save(); }
+            window.location.assign(link.url);
+          }});
         }
 
         const thumb = document.createElement('div');
         thumb.className = 'thumb';
 
-        const setFallback = ()=>{
+        const setFallbackInitial = ()=>{
           const fallback = document.createElement('div');
           fallback.className = 'fallback-initial';
           fallback.textContent = (link.name||'?').slice(0,1).toUpperCase();
           thumb.replaceChildren(fallback);
         };
 
-        // Prefer custom icon, else google favicon, else big initial
-        const iconSrc = norm(link.icon);
-        if (iconSrc) {
-          const img = document.createElement('img');
-          img.alt = '';
-          img.decoding = 'async';
-          img.addEventListener('error', setFallback);
-          img.src = iconSrc;
-          thumb.appendChild(img);
-        } else {
+        // Order: custom icon (if set) → screenshot → favicon → initial
+        const tryFavicon = ()=>{
           const favUrl = googleFavicon(link.url);
-          if (favUrl) {
+          if (favUrl){
             const img = document.createElement('img');
             img.alt = '';
-            img.decoding = 'async';
-            img.addEventListener('error', setFallback);
+            img.decoding='async'; img.loading='lazy';
+            img.addEventListener('error', setFallbackInitial);
             img.src = favUrl;
-            thumb.appendChild(img);
-          } else {
-            setFallback();
-          }
+            thumb.replaceChildren(img);
+          } else setFallbackInitial();
+        };
+
+        const useScreenshot = ()=>{
+          const shot = screenshotURL(link.url, link.lastVisited||0);
+          if (shot){
+            const img = document.createElement('img');
+            img.alt=''; img.decoding='async'; img.loading='lazy';
+            img.addEventListener('error', tryFavicon);
+            img.src = shot;
+            thumb.replaceChildren(img);
+          } else tryFavicon();
+        };
+
+        if (norm(link.icon)){
+          const img = document.createElement('img');
+          img.alt=''; img.decoding='async'; img.loading='lazy';
+          img.addEventListener('error', useScreenshot);
+          img.src = link.icon;
+          thumb.appendChild(img);
+        } else {
+          useScreenshot();
         }
 
         const caption = document.createElement('div');
@@ -389,7 +397,7 @@
 
       if(list.length === 0){
         const empty = document.createElement('div');
-        empty.style.opacity = .7; empty.style.textAlign='center'; empty.textContent = 'No links match your search.';
+        empty.style.opacity=.7; empty.style.textAlign='center'; empty.textContent='No links match your search.';
         grid.appendChild(empty);
       }
     }
@@ -401,8 +409,7 @@
       if(fromIdx < 0 || toIdx < 0) return;
       const [moved] = links.splice(fromIdx,1);
       links.splice(toIdx,0,moved);
-      save();
-      render(searchInput.value);
+      save(); render(searchInput.value);
     }
 
     function openEditor(id=null){
@@ -415,39 +422,23 @@
         updateIconPreview(l.icon || '');
         dlgTitle.textContent = 'Edit Link';
       } else {
-        nameInput.value = '';
-        urlInput.value = '';
-        iconInput.value = '';
-        updateIconPreview('');
-        dlgTitle.textContent = 'Add Link';
+        nameInput.value = ''; urlInput.value = ''; iconInput.value = '';
+        updateIconPreview(''); dlgTitle.textContent = 'Add Link';
       }
-      editor.showModal();
-      setTimeout(()=> nameInput.focus(), 50);
+      editor.showModal(); setTimeout(()=> nameInput.focus(), 50);
     }
 
     function confirmDelete(id){
-      const l = links.find(x=>x.id===id);
-      if(!l) return;
-      if(confirm(`Delete “${l.name}”?`)){
-        links = links.filter(x=>x.id!==id);
-        save();
-        render(searchInput.value);
-      }
+      const l = links.find(x=>x.id===id); if(!l) return;
+      if(confirm(`Delete “${l.name}”?`)){ links = links.filter(x=>x.id!==id); save(); render(searchInput.value); }
     }
 
+    // ---- Icon file helpers (optional override) ----
     function updateIconPreview(src){
-      if (src) {
-        iconPreview.src = src;
-        iconPreview.style.display = 'inline-block';
-      } else {
-        iconPreview.removeAttribute('src');
-        iconPreview.style.display = 'none';
-      }
+      if (src) { iconPreview.src = src; iconPreview.style.display='inline-block'; }
+      else { iconPreview.removeAttribute('src'); iconPreview.style.display='none'; }
     }
-    iconInput.addEventListener('input', ()=>{
-      const v = iconInput.value.trim();
-      updateIconPreview(v || '');
-    });
+    iconInput.addEventListener('input', ()=> updateIconPreview(iconInput.value.trim() || ''));
     function imageFileToDataURL(file){
       return new Promise((resolve, reject)=>{
         const fr = new FileReader();
@@ -458,91 +449,59 @@
     }
     if(iconFile){
       iconFile.addEventListener('change', async (e)=>{
-        const file = e.target.files?.[0];
-        if(!file) return;
-        try{
-          const dataUrl = await imageFileToDataURL(file);
-          iconInput.value = dataUrl;
-          updateIconPreview(dataUrl);
-        }catch(err){ alert('Could not load image.'); }
+        const file = e.target.files?.[0]; if(!file) return;
+        try{ const dataUrl = await imageFileToDataURL(file);
+             iconInput.value = dataUrl; updateIconPreview(dataUrl);
+        }catch{ alert('Could not load image.'); }
       });
     }
-    clearIconBtn.addEventListener('click', ()=>{
-      iconInput.value = '';
-      updateIconPreview('');
-    });
+    clearIconBtn.addEventListener('click', ()=>{ iconInput.value=''; updateIconPreview(''); });
 
+    // ---- Edit / Import / Export / Misc ----
     ['click','auxclick','mousedown','mouseup'].forEach((type)=>{
       document.addEventListener(type, (e)=>{
         if(!editMode) return;
         const allow = e.target && (
-          e.target.closest('dialog') ||
-          e.target.closest('header') ||
-          e.target.closest('.icon-btn') ||
-          e.target.closest('#editorForm')
+          e.target.closest('dialog') || e.target.closest('header') ||
+          e.target.closest('.icon-btn') || e.target.closest('#editorForm')
         );
         if(allow) return;
-
         const onCard = e.target && e.target.closest && e.target.closest('.card');
-        if(onCard){
-          e.preventDefault();
-          e.stopPropagation();
-          if(typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
-        }
+        if(onCard){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); }
       }, true);
     });
 
     addBtn.addEventListener('click', ()=> openEditor());
-    editToggle.addEventListener('click', ()=>{
-      editMode = !editMode;
-      editToggle.setAttribute('aria-pressed', String(editMode));
-      render(searchInput.value);
-    });
+    editToggle.addEventListener('click', ()=>{ editMode = !editMode; editToggle.setAttribute('aria-pressed', String(editMode)); render(searchInput.value); });
     exportBtn.addEventListener('click', ()=>{
       const payload = { title: pageTitle.value, links };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'start-page-links.json';
-      a.click();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'start-page-links.json'; a.click();
       URL.revokeObjectURL(a.href);
     });
     importFile.addEventListener('change', async (e)=>{
-      const file = e.target.files?.[0];
-      if(!file) return;
+      const file = e.target.files?.[0]; if(!file) return;
       try{
-        const text = await file.text();
-        const data = JSON.parse(text);
+        const text = await file.text(); const data = JSON.parse(text);
         if(Array.isArray(data.links)){
-          links = data.links
-            .filter(x => x && typeof x.name==='string' && typeof x.url==='string')
-            .map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url, icon: x.icon }));
-          if(links.length === 0) throw new Error('No usable links in file.');
-          save();
-          if(typeof data.title === 'string'){ pageTitle.value = data.title; saveTitle(); }
+          links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string')
+            .map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url, icon: x.icon, lastVisited: x.lastVisited }));
+          if(!links.length) throw new Error('No usable links in file.');
+          save(); if(typeof data.title === 'string'){ pageTitle.value = data.title; saveTitle(); }
           render(searchInput.value);
         } else if(Array.isArray(data)){
-          links = data.map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url, icon: x.icon }));
+          links = data.map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url, icon: x.icon, lastVisited: x.lastVisited }));
           save(); render(searchInput.value);
-        } else {
-          alert('Import file format not recognized.');
-        }
-      }catch(err){
-        console.error(err); alert('Import failed: ' + err.message);
-      } finally {
-        importFile.value = '';
-      }
+        } else { alert('Import file format not recognized.'); }
+      }catch(err){ console.error(err); alert('Import failed: ' + err.message); }
+      finally{ importFile.value=''; }
     });
     resetBtn.addEventListener('click', ()=>{
-      if(confirm('Restore starter links? This will replace your current list.')){
-        links = starterData(); save(); render(searchInput.value);
-      }
+      if(confirm('Restore starter links? This will replace your current list.')){ links = starterData(); save(); render(searchInput.value); }
     });
     editorForm.addEventListener('submit', (e)=>{
       e.preventDefault();
-      const name = norm(nameInput.value);
-      const url = norm(urlInput.value);
-      let icon = norm(iconInput.value);
+      const name = norm(nameInput.value), url = norm(urlInput.value); let icon = norm(iconInput.value);
       if(!name || !url) return;
       try{ new URL(url); }catch{ alert('Please enter a valid URL (include https://)'); return; }
       if(!icon) icon = undefined;
@@ -551,22 +510,13 @@
         const idx = links.findIndex(l=>l.id===editingId);
         if(idx>-1){ links[idx] = { ...links[idx], name, url, ...(icon ? {icon} : {icon: undefined}) }; }
       } else {
-        const obj = { id: uid(), name, url, ...(icon ? {icon} : {}) };
-        links.push(obj);
+        links.push({ id: uid(), name, url, ...(icon ? {icon} : {}) });
       }
-      save();
-      render(searchInput.value);
-      editingId = null;
-      editor.close();
+      save(); render(searchInput.value); editingId = null; editor.close();
     });
-    editor.addEventListener('close', ()=>{ editingId = null; });
-    searchInput.addEventListener('input', ()=> render(searchInput.value));
 
-    window.addEventListener('keydown', (e)=>{
-      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
-        e.preventDefault(); searchInput.focus(); searchInput.select();
-      }
-    });
+    searchInput.addEventListener('input', ()=> render(searchInput.value));
+    window.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); searchInput.focus(); searchInput.select(); } });
     pageTitle.addEventListener('input', ()=> localStorage.setItem(TITLE_KEY, pageTitle.value));
 
     load(); save(); render();
@@ -574,4 +524,3 @@
   </script>
 </body>
 </html>
-
