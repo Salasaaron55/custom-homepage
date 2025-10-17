@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string').map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -242,7 +242,7 @@
 
         const fav = document.createElement('div');
         fav.className = 'favicon';
-        const favUrl = faviconFor(link.url, link.name);
+        const favUrl = link.icon || faviconFor(link.url, link.name);
         if(favUrl){
           const img = document.createElement('img');
           img.src = favUrl; img.alt = ''; img.width=28; img.height=28; img.style.borderRadius='8px';
@@ -327,10 +327,12 @@
         const l = links.find(x=>x.id===id);
         nameInput.value = l?.name || '';
         urlInput.value = l?.url || '';
+        iconInput.value = l?.icon || '';
         dlgTitle.textContent = 'Edit Link';
       } else {
         nameInput.value = '';
         urlInput.value = '';
+        iconInput.value = '';
         dlgTitle.textContent = 'Add Link';
       }
       editor.showModal();
@@ -426,14 +428,15 @@
       e.preventDefault();
       const name = norm(nameInput.value);
       const url = norm(urlInput.value);
+      const icon = norm(iconInput.value);
       if(!name || !url) return;
       try{ new URL(url); }catch{ alert('Please enter a valid URL (include https://)'); return; }
 
       if(editingId){
         const idx = links.findIndex(l=>l.id===editingId);
-        if(idx>-1){ links[idx] = { ...links[idx], name, url }; }
+        if(idx>-1){ links[idx] = { ...links[idx], name, url, icon: icon || undefined }; }
       } else {
-        links.push({ id: uid(), name, url });
+        links.push({ id: uid(), name, url, icon: icon || undefined });
       }
       save();
       render(searchInput.value);
