@@ -25,6 +25,7 @@
       <label>Name <input id="name" required></label><br>
       <label>URL <input id="url" type="url" required></label><br>
       <label>Icon URL (optional) <input id="icon" type="text" placeholder="URL, ./icons/mysite.png, or data:image/png;base64,…"></label><br>
+      <div><img id="iconPreview" alt="icon preview"></div>
       <input id="iconFile" type="file" accept="image/*">
       <menu>
         <button value="cancel">Cancel</button>
@@ -43,6 +44,17 @@
     const urlInput = document.getElementById('url');
     const iconInput = document.getElementById('icon');
     const iconFile = document.getElementById('iconFile');
+
+    function showPreview(src){
+      const img = document.getElementById('iconPreview');
+      if(src){ img.src = src; img.style.display = 'inline-block'; }
+      else { img.removeAttribute('src'); img.style.display = 'none'; }
+    }
+
+    iconInput.addEventListener('input', ()=>{
+      const v = iconInput.value.trim();
+      showPreview(v || '');
+    });
 
     const STORE_KEY = 'favoriteLinks.v2';
     let links = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
@@ -71,6 +83,7 @@
         if(!file) return;
         const dataUrl = await imageFileToDataURL(file);
         iconInput.value = dataUrl;
+        showPreview(dataUrl);
       });
     }
 
@@ -84,11 +97,12 @@
         fav.className = 'favicon';
         if(link.icon){
           const img = document.createElement('img');
-          img.src = link.icon;
           img.alt = '';
+          img.addEventListener('error', ()=>{ fav.textContent = (link.name||'?').slice(0,1).toUpperCase(); });
+          img.src = link.icon;
           fav.appendChild(img);
         } else {
-          fav.textContent = link.name[0];
+          fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
         }
 
         const title = document.createElement('div');
