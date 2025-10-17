@@ -269,9 +269,14 @@
     }
 
     function load(){
-      links = migrate();
-      pageTitle.value = localStorage.getItem(TITLE_KEY) || 'My Start Page';
-    }
+  links = migrate();
+  if (!Array.isArray(links) || !links.length) {
+    links = starterData();
+    save(); // ensure they persist
+  }
+  pageTitle.value = localStorage.getItem(TITLE_KEY) || 'My Start Page';
+}
+
     function save(){ localStorage.setItem(STORE_KEY_V3, JSON.stringify(links)); }
     function saveTitle(){ localStorage.setItem(TITLE_KEY, pageTitle.value); }
 
@@ -569,3 +574,4 @@
   </script>
 </body>
 </html>
+
