@@ -336,6 +336,19 @@
       }
     }
 
+    /* ---------- Global navigation guard in edit mode ---------- */
+    ['click','auxclick','mousedown','mouseup'].forEach((type)=>{
+      document.addEventListener(type, (e)=>{
+        if(!editMode) return;
+        const onCard = e.target && e.target.closest && e.target.closest('.card');
+        if(onCard){
+          e.preventDefault();
+          e.stopPropagation();
+          if(typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+        }
+      }, true); // capture phase to intercept before any bubbling handlers
+    });
+
     /* ---------- Events ---------- */
     addBtn.addEventListener('click', ()=> openEditor());
 
