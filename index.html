@@ -5,32 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Start Page</title>
   <style>
-    body { background:#0b0c0f; color:#e6e9ef; font-family:system-ui, sans-serif; margin:0; }
-    header, footer { text-align:center; padding:1em; }
-    .grid { display:flex; flex-wrap:wrap; gap:1em; justify-content:center; padding:1em; }
-    .card { background:#171922; padding:1em; border-radius:10px; width:200px; text-align:center; cursor:pointer; }
-    .favicon img { width:32px; height:32px; border-radius:8px; }
+    :root{
+      --bg:#0b0c0f; --panel:#12141a; --card:#171922; --text:#e6e9ef; --muted:#9aa3b2; --accent:#4f8cff; --ring:#4f8cff55;
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f6f7fb; --panel:#ffffff; --card:#ffffff; --text:#0c0d0f; --muted:#5a6473; --accent:#2b6cff; --ring:#2b6cff33; }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{ margin:0; font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); background:
+      radial-gradient(1200px 800px at 100% -10%, #2a2f45 0%, transparent 60%), var(--bg);
+      display:flex; flex-direction:column; }
+
+    header{ position:sticky; top:0; z-index:10; backdrop-filter:saturate(140%) blur(8px);
+      background: color-mix(in oklab, var(--panel) 80%, transparent);
+      border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:16px; display:flex; gap:12px; align-items:center; }
+    h1{ margin:0; font-size:clamp(22px,3vw,28px); letter-spacing:.3px; font-weight:800; }
+    .spacer{ flex:1 }
+    .search{ position:relative; width:min(380px,40vw); }
+    .search input{ width:100%; padding:10px 12px 10px 36px; border-radius:10px; background:var(--panel);
+      color:var(--text); border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
+    .search svg{ position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.65 }
+    .btn{ appearance:none; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background:var(--panel);
+      color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+    .btn.primary{ background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 20%, var(--panel)), var(--accent)); color:#fff; border-color:transparent; }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 8px 26px -16px var(--ring); }
+
+    main{ flex:1; }
+    .grid{ max-width:1100px; margin:0 auto; padding:24px 16px 36px; display:grid; gap:16px;
+      grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+
+    .card{ position:relative; background:var(--card); border:1px solid color-mix(in oklab, var(--muted) 22%, transparent);
+      border-radius:16px; padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:.15s ease; }
+    .card:hover{ transform:translateY(-2px); box-shadow:0 14px 38px -26px var(--ring); }
+
+    .favicon{ width:36px; height:36px; border-radius:10px; display:grid; place-items:center; background: color-mix(in oklab, var(--accent) 15%, var(--bg));
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); font-weight:700; }
+    .favicon img{ width:100%; height:100%; border-radius:10px; object-fit:contain; display:block; }
+
+    .meta{ min-width:0; display:flex; flex-direction:column; }
+    .name{ font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .url{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    dialog{ border:none; border-radius:16px; padding:0; background:var(--panel); color:var(--text); width:min(520px,96vw);
+      box-shadow:0 30px 60px -35px rgba(0,0,0,.6); }
+    .dlg-head{ padding:16px 18px; border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent); font-weight:800; }
+    .dlg-body{ padding:16px 18px; display:grid; gap:12px; }
+    .field{ display:grid; gap:6px; }
+    label{ font-size:12px; color:var(--muted); }
+    input[type="text"], input[type="url"]{ width:100%; padding:10px 12px; border-radius:10px; background:var(--bg); color:var(--text);
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
+    #iconPreview{ width:64px; height:64px; border-radius:12px; background:var(--card); border:1px solid color-mix(in oklab, var(--muted) 25%, transparent); object-fit:contain; display:none; }
+    .dlg-foot{ padding:14px 18px; border-top:1px solid color-mix(in oklab, var(--muted) 25%, transparent); display:flex; gap:10px; justify-content:flex-end; }
+
+    footer{ color:var(--muted); text-align:center; padding: 10px 0 22px; font-size: 12px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>My Start Page</h1>
-    <button id="addBtn">Add</button>
+    <div class="wrap">
+      <h1>My Start Page</h1>
+      <div class="spacer"></div>
+      <div class="search" role="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input id="search" placeholder="Filter links… (Ctrl/⌘+K)" autocomplete="off" />
+      </div>
+      <button id="addBtn" class="btn primary">➕ Add</button>
+    </div>
   </header>
 
-  <main class="grid" id="grid"></main>
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
 
   <dialog id="editor">
     <form method="dialog" id="editorForm">
-      <label>Name <input id="name" required></label><br>
-      <label>URL <input id="url" type="url" required></label><br>
-      <label>Icon URL (optional) <input id="icon" type="text" placeholder="URL, ./icons/mysite.png, or data:image/png;base64,…"></label><br>
-      <div><img id="iconPreview" alt="icon preview"></div>
-      <input id="iconFile" type="file" accept="image/*">
-      <menu>
-        <button value="cancel">Cancel</button>
-        <button value="default">Save</button>
-      </menu>
+      <div class="dlg-head">Add / Edit Link</div>
+      <div class="dlg-body">
+        <div class="field"><label for="name">Name</label><input id="name" required /></div>
+        <div class="field"><label for="url">URL</label><input id="url" type="url" required placeholder="https://example.com"/></div>
+        <div class="field"><label for="icon">Icon URL (optional)</label><input id="icon" type="text" placeholder="URL or data:image/png;base64,…" /></div>
+        <div class="field"><label>Upload icon</label><input id="iconFile" type="file" accept="image/*" /><img id="iconPreview" alt="Preview"></div>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn" value="cancel">Cancel</button>
+        <button class="btn primary" value="default">Save</button>
+      </div>
     </form>
   </dialog>
 
@@ -40,96 +102,66 @@
     const grid = document.getElementById('grid');
     const addBtn = document.getElementById('addBtn');
     const editor = document.getElementById('editor');
+    const editorForm = document.getElementById('editorForm');
     const nameInput = document.getElementById('name');
     const urlInput = document.getElementById('url');
     const iconInput = document.getElementById('icon');
     const iconFile = document.getElementById('iconFile');
+    const iconPreview = document.getElementById('iconPreview');
+    const searchInput = document.getElementById('search');
 
-    function showPreview(src){
-      const img = document.getElementById('iconPreview');
-      if(src){ img.src = src; img.style.display = 'inline-block'; }
-      else { img.removeAttribute('src'); img.style.display = 'none'; }
-    }
-
-    iconInput.addEventListener('input', ()=>{
-      const v = iconInput.value.trim();
-      showPreview(v || '');
-    });
-
-    const STORE_KEY = 'favoriteLinks.v2';
+    const STORE_KEY = 'favoriteLinks.v3';
     let links = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
-
-    if (!links.length) {
-      links = [
-        { name:'Google', url:'https://www.google.com' },
-        { name:'YouTube', url:'https://www.youtube.com' }
-      ];
-    }
+    if(!links.length){ links = [
+      { name:'Google', url:'https://www.google.com' },
+      { name:'YouTube', url:'https://www.youtube.com' }
+    ]; save(); }
 
     function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(links)); }
+    const hostname = (u)=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch{ return u; } };
 
-    async function imageFileToDataURL(file) {
-      return new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.onload = () => resolve(fr.result);
-        fr.onerror = () => reject('Failed');
-        fr.readAsDataURL(file);
-      });
+    function showPreview(src){ if(src){ iconPreview.src = src; iconPreview.style.display='inline-block'; } else { iconPreview.removeAttribute('src'); iconPreview.style.display='none'; } }
+
+    async function fileToDataURL(file){
+      return await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error('read fail')); fr.readAsDataURL(file); });
     }
 
-    if(iconFile){
-      iconFile.addEventListener('change', async (e)=>{
-        const file = e.target.files?.[0];
-        if(!file) return;
-        const dataUrl = await imageFileToDataURL(file);
-        iconInput.value = dataUrl;
-        showPreview(dataUrl);
-      });
-    }
+    if(iconFile){ iconFile.addEventListener('change', async (e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const d=await fileToDataURL(f); iconInput.value=d; showPreview(d);} finally{ e.target.value=''; } }); }
+    iconInput.addEventListener('input', ()=> showPreview(iconInput.value.trim()));
 
-    function render(){
-      grid.innerHTML = '';
-      links.forEach((link, i)=>{
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        const fav = document.createElement('div');
-        fav.className = 'favicon';
-        if(link.icon){
-          const img = document.createElement('img');
-          img.alt = '';
-          img.addEventListener('error', ()=>{ fav.textContent = (link.name||'?').slice(0,1).toUpperCase(); });
-          img.src = link.icon;
-          fav.appendChild(img);
-        } else {
-          fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
-        }
-
-        const title = document.createElement('div');
-        title.textContent = link.name;
-
-        card.append(fav, title);
-        card.onclick = ()=> window.open(link.url, '_blank');
+    function render(filter=''){
+      const q = (filter||'').toLowerCase().trim();
+      grid.innerHTML='';
+      (q? links.filter(l=> (l.name||'').toLowerCase().includes(q) || (l.url||'').toLowerCase().includes(q)) : links)
+      .forEach(link=>{
+        const card=document.createElement('div'); card.className='card';
+        const fav=document.createElement('div'); fav.className='favicon';
+        if(link.icon){ const img=document.createElement('img'); img.alt=''; img.src=link.icon; img.onerror=()=>{ fav.textContent=(link.name||'?')[0]?.toUpperCase()||'?'; }; fav.appendChild(img); }
+        else{ fav.textContent=(link.name||'?')[0]?.toUpperCase()||'?'; }
+        const meta=document.createElement('div'); meta.className='meta';
+        const n=document.createElement('div'); n.className='name'; n.textContent=link.name; const u=document.createElement('div'); u.className='url'; u.textContent=hostname(link.url);
+        meta.append(n,u);
+        card.append(fav,meta);
+        card.addEventListener('click', (e)=>{ if(e.metaKey||e.ctrlKey) window.open(link.url,'_blank'); else window.location.assign(link.url); });
         grid.appendChild(card);
       });
-    }
 
-    addBtn.onclick = ()=>{
-      nameInput.value = '';
-      urlInput.value = '';
-      iconInput.value = '';
-      editor.showModal();
-    };
+      if(!grid.children.length){ const empty=document.createElement('div'); empty.style.textAlign='center'; empty.style.opacity=.7; empty.textContent='No links match your search.'; grid.appendChild(empty);}    }
 
-    editor.addEventListener('close', ()=>{
-      if(editor.returnValue === 'default'){
-        const name = nameInput.value.trim();
-        const url = urlInput.value.trim();
-        const icon = iconInput.value.trim();
-        if(name && url){
-          links.push({ name, url, icon });
-          save();
-          render();
+    addBtn.addEventListener('click', ()=>{ nameInput.value=''; urlInput.value=''; iconInput.value=''; showPreview(''); editor.showModal(); });
+
+    editorForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name=nameInput.value.trim(); const url=urlInput.value.trim(); const icon=iconInput.value.trim();
+      try{ new URL(url); }catch{ alert('Please enter a valid URL including https://'); return; }
+      links.push({ name, url, icon }); save(); render(searchInput.value);
+      editor.close();
+    });
+
+    searchInput.addEventListener('input', ()=> render(searchInput.value));
+    window.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); searchInput.focus(); searchInput.select(); } });
+
+    render();
         }
       }
     });
