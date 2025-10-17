@@ -340,16 +340,26 @@
     ['click','auxclick','mousedown','mouseup'].forEach((type)=>{
       document.addEventListener(type, (e)=>{
         if(!editMode) return;
+        // Allow toolbar, dialog, and inline icon buttons (edit/delete/drag)
+        const allow = e.target && (
+          e.target.closest('dialog') ||
+          e.target.closest('header') ||
+          e.target.closest('.icon-btn') ||
+          e.target.closest('#editorForm')
+        );
+        if(allow) return;
+
+        // Block clicks on cards while editing
         const onCard = e.target && e.target.closest && e.target.closest('.card');
         if(onCard){
           e.preventDefault();
           e.stopPropagation();
           if(typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
         }
-      }, true); // capture phase to intercept before any bubbling handlers
+      }, true);
     });
 
-    /* ---------- Events ---------- */
+    /* ---------- Event
     addBtn.addEventListener('click', ()=> openEditor());
 
     editToggle.addEventListener('click', ()=>{
