@@ -70,7 +70,9 @@
       width: 28px; height: 28px; border-radius: 8px; flex:0 0 28px; display:grid; place-items:center; font-weight:700; font-size:14px;
       background: color-mix(in oklab, var(--accent) 15%, var(--bg));
       border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+      overflow:hidden;
     }
+    .favicon img{ width:28px; height:28px; display:block; border-radius:8px; }
     .meta{ display:flex; flex-direction:column; min-width:0; }
     .name{ font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .url{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -88,25 +90,27 @@
 
     dialog{
       border:none; border-radius: 16px; padding:0; box-shadow: 0 30px 60px -35px rgba(0,0,0,.6);
-      background: var(--bg-elev); color:var(--text); width:min(520px, 96vw);
+      background: var(--bg-elev); color:var(--text); width:min(560px, 96vw);
     }
     .dlg-head{ padding:16px 18px; border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent); font-weight:700; display:flex; justify-content:space-between; align-items:center; }
     .dlg-body{ padding:16px 18px; display:grid; gap:12px; }
     .field{ display:grid; gap:6px; }
     label{ font-size:12px; color:var(--muted); }
-    input[type="text"], input[type="url"], input[type="file"]{ width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
-      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
-    .help{ font-size:12px; color:var(--muted); }
-    #iconPreview{ width:64px; height:64px; border-radius:12px; background:var(--card); border:1px solid color-mix(in oklab, var(--muted) 25%, transparent); object-fit:contain; display:none; }
+    input[type="text"], input[type="url"]{
+      width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+    }
+    .icon-row{ display:grid; gap:8px; }
+    .icon-tools{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .icon-preview{ width:32px; height:32px; border-radius:8px; border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); display:none; }
+    .hint{ font-size:11px; color:var(--muted); }
+
     .dlg-foot{ padding:14px 18px; border-top:1px solid color-mix(in oklab, var(--muted) 25%, transparent); display:flex; gap:10px; justify-content:flex-end; }
 
     footer{ color:var(--muted); text-align:center; padding: 10px 0 22px; font-size: 12px; }
-    .search{
-      position: relative; flex: 1 1 260px; min-width: 220px;
-    }
+    .search{ position: relative; flex: 1 1 260px; min-width: 220px; }
     .search input{ width:100%; padding:10px 12px 10px 36px; border-radius:10px; background: var(--bg-elev); color: var(--text);
-      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
-    }
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
     .search svg{ position:absolute; left:10px; top:50%; transform: translateY(-50%); opacity:.7 }
     .hidden{ display:none !important }
   </style>
@@ -150,12 +154,20 @@
           <label for="url">URL</label>
           <input id="url" name="url" type="url" inputmode="url" placeholder="https://example.com" required />
         </div>
-        <div class="field">
-          <label for="icon">Icon</label>
-          <input id="icon" name="icon" type="text" placeholder="Paste URL or data:image/png;base64,…" />
-          <input id="iconFile" name="iconFile" type="file" accept="image/*" />
-          <div class="help">Tip: Click <em>Choose File</em> to embed a local PNG/JPG/WebP. We convert it to a data URL so it works offline.</div>
-          <img id="iconPreview" alt="Icon preview" />
+
+        <!-- New: Custom icon tools -->
+        <div class="field icon-row">
+          <label for="icon">Icon (optional)</label>
+          <input id="icon" name="icon" type="text" inputmode="url"
+                 placeholder="https://…  or  ./icons/mysite.png  or  data:image/png;base64,…" />
+          <div class="icon-tools">
+            <img id="iconPreview" class="icon-preview" alt="icon preview">
+            <label class="btn" for="iconFile">📁 Choose file
+              <input id="iconFile" type="file" accept="image/*" hidden>
+            </label>
+            <button class="btn flat" type="button" id="clearIconBtn" title="Remove custom icon">🧹 Clear</button>
+          </div>
+          <div class="hint">If no custom icon is set, the site’s favicon will be used automatically.</div>
         </div>
       </div>
       <div class="dlg-foot">
@@ -167,10 +179,14 @@
 
   <script>
   (function(){
-    const STORE_KEY = 'favoriteLinks.v1';
+    const STORE_KEY_V3 = 'favoriteLinks.v3';   // this build
+    const STORE_KEY_V2 = 'favoriteLinks.v2';   // legacy (icon without ids)
+    const STORE_KEY_V1 = 'favoriteLinks.v1';   // legacy (no icons)
     const TITLE_KEY = 'favoriteLinks.title';
 
-    /** @type {{id:string,name:string,url:string,icon?:string}[]} */
+    /** @typedef {{id:string,name:string,url:string,icon?:string}} Link */
+
+    /** @type {Link[]} */
     let links = [];
     let editMode = false;
     let editingId = null;
@@ -184,6 +200,8 @@
     const iconInput = document.getElementById('icon');
     const iconFile = document.getElementById('iconFile');
     const iconPreview = document.getElementById('iconPreview');
+    const clearIconBtn = document.getElementById('clearIconBtn');
+
     const addBtn = document.getElementById('addBtn');
     const editToggle = document.getElementById('editToggle');
     const exportBtn = document.getElementById('exportBtn');
@@ -197,15 +215,6 @@
     const norm = s => (s||'').trim();
     const hostname = (u)=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch{ return u; } };
 
-    async function fileToDataURL(file){
-      return await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error('read fail')); fr.readAsDataURL(file); });
-    }
-
-    function showPreview(src){ if(src){ iconPreview.src = src; iconPreview.style.display='inline-block'; } else { iconPreview.removeAttribute('src'); iconPreview.style.display='none'; } }
-
-    if(iconFile){ iconFile.addEventListener('change', async (e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const d=await fileToDataURL(f); iconInput.value=d; showPreview(d);} finally{ e.target.value=''; } }); }
-    iconInput.addEventListener('input', ()=> showPreview(iconInput.value.trim()));
-
     function starterData(){
       return [
         { id: uid(), name:'Google', url:'https://www.google.com' },
@@ -217,15 +226,45 @@
       ];
     }
 
+    function readJSON(key, fallback=null){
+      try{ return JSON.parse(localStorage.getItem(key)); }catch{ return fallback; }
+    }
+
+    function migrate(){
+      // Prefer v3
+      let v3 = readJSON(STORE_KEY_V3);
+      if (Array.isArray(v3) && v3.length) {
+        return v3.map(sanitizeLink);
+      }
+      // Try v2 (no ids, maybe icons)
+      let v2 = readJSON(STORE_KEY_V2);
+      if (Array.isArray(v2) && v2.length) {
+        return v2.map(x => sanitizeLink({ id: uid(), name: x.name, url: x.url, icon: x.icon }));
+      }
+      // Try v1 payload or raw array inside v1
+      let v1 = readJSON(STORE_KEY_V1);
+      if (Array.isArray(v1) && v1.length) {
+        return v1.map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url }));
+      }
+      return starterData();
+    }
+
+    function sanitizeLink(x){
+      const name = norm(x?.name);
+      const url  = norm(x?.url);
+      const icon = norm(x?.icon || '');
+      const id   = norm(x?.id) || uid();
+      return icon ? { id, name, url, icon } : { id, name, url };
+    }
+
     function load(){
-      try{ links = JSON.parse(localStorage.getItem(STORE_KEY)) || starterData(); }
-      catch{ links = starterData(); }
+      links = migrate();
       pageTitle.value = localStorage.getItem(TITLE_KEY) || 'My Start Page';
     }
-    function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(links)); }
+    function save(){ localStorage.setItem(STORE_KEY_V3, JSON.stringify(links)); }
     function saveTitle(){ localStorage.setItem(TITLE_KEY, pageTitle.value); }
 
-    function faviconFor(url){
+    function googleFavicon(url){
       try{
         const u = new URL(url);
         return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(u.origin)}&sz=64`;
@@ -242,7 +281,6 @@
         card.className = 'card';
         card.draggable = editMode; card.dataset.id = link.id; card.setAttribute('aria-label', link.name);
 
-        // View mode navigation
         if(!editMode){
           card.setAttribute('role','link');
           card.tabIndex = 0;
@@ -253,22 +291,34 @@
 
         const fav = document.createElement('div');
         fav.className = 'favicon';
-        const favUrl = link.icon || faviconFor(link.url);
-        if(favUrl){
-          const img = document.createElement('img');
-          img.alt = '';
-          img.addEventListener('error', ()=>{ fav.textContent = (link.name||'?').slice(0,1).toUpperCase(); });
-          img.src = favUrl; // set last so error handler is in place
-          fav.replaceChildren(img);
-        } else {
-          fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
-        }
 
         const meta = document.createElement('div');
         meta.className = 'meta';
-        const nameEl = document.createElement('div'); nameEl.className='name'; nameEl.textContent = link.name;
-        const urlEl = document.createElement('div'); urlEl.className='url'; urlEl.textContent = hostname(link.url);
+        const nameEl = document.createElement('div'); nameEl.className='name'; nameEl.textContent = link.name || '';
+        const urlEl = document.createElement('div'); urlEl.className='url'; urlEl.textContent = hostname(link.url || '');
         meta.appendChild(nameEl); meta.appendChild(urlEl);
+
+        // Prefer custom icon; fall back to Google favicon; then fallback letter
+        const setFallbackLetter = ()=> { fav.textContent = (link.name||'?').slice(0,1).toUpperCase(); };
+        let iconSrc = norm(link.icon);
+        if (iconSrc) {
+          const img = document.createElement('img');
+          img.alt = '';
+          img.addEventListener('error', setFallbackLetter);
+          img.src = iconSrc;
+          fav.appendChild(img);
+        } else {
+          const favUrl = googleFavicon(link.url);
+          if (favUrl) {
+            const img = document.createElement('img');
+            img.alt = '';
+            img.addEventListener('error', setFallbackLetter);
+            img.src = favUrl;
+            fav.appendChild(img);
+          } else {
+            setFallbackLetter();
+          }
+        }
 
         card.appendChild(fav); card.appendChild(meta);
 
@@ -283,9 +333,11 @@
           const del = document.createElement('button'); del.type='button'; del.className='icon-btn'; del.title='Delete'; del.innerHTML='🗑️';
           actions.append(drag, edit, del); card.appendChild(actions);
 
-          // Prevent accidental navigation in edit mode except buttons
           card.addEventListener('click', (e)=>{
-            if(!e.target.closest('.icon-btn')){ if(e.preventDefault) e.preventDefault(); e.stopPropagation(); }
+            if(!e.target.closest('.icon-btn')){
+              if(e.preventDefault) e.preventDefault();
+              e.stopPropagation();
+            }
           });
 
           edit.addEventListener('click', (e)=>{ e.stopPropagation(); openEditor(link.id); });
@@ -332,17 +384,17 @@
     function openEditor(id=null){
       editingId = id;
       if(id){
-        const l = links.find(x=>x.id===id);
-        nameInput.value = l?.name || '';
-        urlInput.value = l?.url || '';
-        iconInput.value = l?.icon || '';
-        showPreview(iconInput.value.trim());
+        const l = links.find(x=>x.id===id) || {};
+        nameInput.value = l.name || '';
+        urlInput.value = l.url || '';
+        iconInput.value = l.icon || '';
+        updateIconPreview(l.icon || '');
         dlgTitle.textContent = 'Edit Link';
       } else {
         nameInput.value = '';
         urlInput.value = '';
         iconInput.value = '';
-        showPreview('');
+        updateIconPreview('');
         dlgTitle.textContent = 'Add Link';
       }
       editor.showModal();
@@ -359,6 +411,48 @@
       }
     }
 
+    /* ---------- Icon helpers ---------- */
+    function updateIconPreview(src){
+      if (src) {
+        iconPreview.src = src;
+        iconPreview.style.display = 'inline-block';
+      } else {
+        iconPreview.removeAttribute('src');
+        iconPreview.style.display = 'none';
+      }
+    }
+
+    iconInput.addEventListener('input', ()=>{
+      const v = iconInput.value.trim();
+      updateIconPreview(v || '');
+    });
+
+    function imageFileToDataURL(file){
+      return new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> resolve(fr.result);
+        fr.onerror = ()=> reject(new Error('Failed to read file'));
+        fr.readAsDataURL(file);
+      });
+    }
+
+    if(iconFile){
+      iconFile.addEventListener('change', async (e)=>{
+        const file = e.target.files?.[0];
+        if(!file) return;
+        try{
+          const dataUrl = await imageFileToDataURL(file);
+          iconInput.value = dataUrl;
+          updateIconPreview(dataUrl);
+        }catch(err){ alert('Could not load image.'); }
+      });
+    }
+
+    clearIconBtn.addEventListener('click', ()=>{
+      iconInput.value = '';
+      updateIconPreview('');
+    });
+
     /* ---------- Global navigation guard in edit mode ---------- */
     ['click','auxclick','mousedown','mouseup'].forEach((type)=>{
       document.addEventListener(type, (e)=>{
@@ -370,6 +464,7 @@
           e.target.closest('#editorForm')
         );
         if(allow) return;
+
         const onCard = e.target && e.target.closest && e.target.closest('.card');
         if(onCard){
           e.preventDefault();
@@ -405,14 +500,15 @@
         const text = await file.text();
         const data = JSON.parse(text);
         if(Array.isArray(data.links)){
-          links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string')
-                            .map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));
+          links = data.links
+            .filter(x => x && typeof x.name==='string' && typeof x.url==='string')
+            .map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url, icon: x.icon }));
           if(links.length === 0) throw new Error('No usable links in file.');
           save();
           if(typeof data.title === 'string'){ pageTitle.value = data.title; saveTitle(); }
           render(searchInput.value);
         } else if(Array.isArray(data)){
-          links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));
+          links = data.map(x => sanitizeLink({ id: x.id || uid(), name: x.name, url: x.url, icon: x.icon }));
           save(); render(searchInput.value);
         } else {
           alert('Import file format not recognized.');
@@ -434,15 +530,17 @@
       e.preventDefault();
       const name = norm(nameInput.value);
       const url = norm(urlInput.value);
-      const icon = norm(iconInput.value);
+      let icon = norm(iconInput.value);
       if(!name || !url) return;
       try{ new URL(url); }catch{ alert('Please enter a valid URL (include https://)'); return; }
+      if(!icon) icon = undefined;
 
       if(editingId){
         const idx = links.findIndex(l=>l.id===editingId);
-        if(idx>-1){ links[idx] = { ...links[idx], name, url, icon: icon || '' }; }
+        if(idx>-1){ links[idx] = { ...links[idx], name, url, ...(icon ? {icon} : {icon: undefined}) }; }
       } else {
-        links.push({ id: uid(), name, url, icon: icon || '' });
+        const obj = { id: uid(), name, url, ...(icon ? {icon} : {}) };
+        links.push(obj);
       }
       save();
       render(searchInput.value);
@@ -454,6 +552,7 @@
 
     searchInput.addEventListener('input', ()=> render(searchInput.value));
 
+    // Command palette style focus
     window.addEventListener('keydown', (e)=>{
       if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
         e.preventDefault(); searchInput.focus(); searchInput.select();
@@ -464,6 +563,7 @@
 
     // First load
     load();
+    save(); // persist migration result into v3
     render();
   })();
   </script>
