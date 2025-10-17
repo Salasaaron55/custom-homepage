@@ -6,176 +6,453 @@
   <title>My Start Page</title>
   <style>
     :root{
-      --bg:#0b0c0f; --panel:#12141a; --card:#171922; --text:#e6e9ef; --muted:#9aa3b2; --accent:#4f8cff; --ring:#4f8cff55;
+      --bg: #0b0c0f;
+      --bg-elev: #12141a;
+      --text: #e6e9ef;
+      --muted: #9aa3b2;
+      --accent: #4f8cff;
+      --card: #171922;
+      --ring: #4f8cff55;
+      --danger: #ff5c7a;
+      --ok: #26c281;
     }
     @media (prefers-color-scheme: light){
-      :root{ --bg:#f6f7fb; --panel:#ffffff; --card:#ffffff; --text:#0c0d0f; --muted:#5a6473; --accent:#2b6cff; --ring:#2b6cff33; }
+      :root{
+        --bg: #f7f8fb;
+        --bg-elev: #fff;
+        --text: #0c0d0f;
+        --muted: #5a6473;
+        --accent: #2b6cff;
+        --card: #ffffff;
+        --ring: #2b6cff44;
+        --danger: #d62839;
+        --ok: #209f5e;
+      }
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{ margin:0; font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); background:
-      radial-gradient(1200px 800px at 100% -10%, #2a2f45 0%, transparent 60%), var(--bg);
-      display:flex; flex-direction:column; }
-
-    header{ position:sticky; top:0; z-index:10; backdrop-filter:saturate(140%) blur(8px);
-      background: color-mix(in oklab, var(--panel) 80%, transparent);
-      border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+    body{
+      margin:0; font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text); background: radial-gradient(1200px 800px at 100% -10%, #2a2f45 0%, transparent 60%), var(--bg);
+      display:flex; flex-direction:column; min-height:100%;
     }
-    .wrap{ max-width:1100px; margin:0 auto; padding:16px; display:flex; gap:12px; align-items:center; }
-    h1{ margin:0; font-size:clamp(22px,3vw,28px); letter-spacing:.3px; font-weight:800; }
-    .spacer{ flex:1 }
-    .search{ position:relative; width:min(380px,40vw); }
-    .search input{ width:100%; padding:10px 12px 10px 36px; border-radius:10px; background:var(--panel);
-      color:var(--text); border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
-    .search svg{ position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.65 }
-    .btn{ appearance:none; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background:var(--panel);
-      color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
-    .btn.primary{ background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 20%, var(--panel)), var(--accent)); color:#fff; border-color:transparent; }
-    .btn:hover{ transform:translateY(-1px); box-shadow:0 8px 26px -16px var(--ring); }
-
-    main{ flex:1; }
-    .grid{ max-width:1100px; margin:0 auto; padding:24px 16px 36px; display:grid; gap:16px;
-      grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
-
-    .card{ position:relative; background:var(--card); border:1px solid color-mix(in oklab, var(--muted) 22%, transparent);
-      border-radius:16px; padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:.15s ease; }
-    .card:hover{ transform:translateY(-2px); box-shadow:0 14px 38px -26px var(--ring); }
-
-    .favicon{ width:36px; height:36px; border-radius:10px; display:grid; place-items:center; background: color-mix(in oklab, var(--accent) 15%, var(--bg));
-      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); font-weight:700; }
-    .favicon img{ width:100%; height:100%; border-radius:10px; object-fit:contain; display:block; }
-
-    .meta{ min-width:0; display:flex; flex-direction:column; }
-    .name{ font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: saturate(140%) blur(8px);
+      background: color-mix(in oklab, var(--bg-elev) 70%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+    }
+    .wrap{ max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .title{ font-weight:700; letter-spacing:.2px; font-size: clamp(18px, 3vw, 22px); margin-right:auto; display:flex; align-items:center; gap:10px; }
+    .title input{
+      background: transparent; border:none; outline:none; color:var(--text); font: inherit; border-bottom:1px dashed color-mix(in oklab, var(--text) 40%, transparent);
+      width: min(360px, 50vw);
+    }
+    .btn{
+      appearance:none; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background: var(--bg-elev);
+      color:var(--text); padding:8px 12px; border-radius: 10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition: .15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px -10px var(--ring); }
+    .btn[aria-pressed="true"], .btn.primary{ border-color: transparent; background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 20%, var(--bg-elev)), var(--accent)); color:white; }
+    .btn.danger{ background: linear-gradient(180deg, color-mix(in oklab, var(--danger) 15%, var(--bg-elev)), var(--danger)); color:white; border-color:transparent; }
+    .btn.flat{ background: transparent; border-color: transparent; }
+    .grid{
+      display:grid; gap:14px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      padding: 22px 16px 30px; width: min(1100px, 100%); margin: 0 auto; flex:1;
+    }
+    .card{
+      background: var(--card); border:1px solid color-mix(in oklab, var(--muted) 22%, transparent); border-radius: 16px; padding: 14px; position:relative; overflow:hidden;
+      display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text);
+    }
+    .card:hover{ box-shadow: 0 10px 30px -18px var(--ring); transform: translateY(-1px); }
+    .favicon{
+      width: 28px; height: 28px; border-radius: 8px; flex:0 0 28px; display:grid; place-items:center; font-weight:700; font-size:14px;
+      background: color-mix(in oklab, var(--accent) 15%, var(--bg));
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+    }
+    .meta{ display:flex; flex-direction:column; min-width:0; }
+    .name{ font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .url{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-    dialog{ border:none; border-radius:16px; padding:0; background:var(--panel); color:var(--text); width:min(520px,96vw);
-      box-shadow:0 30px 60px -35px rgba(0,0,0,.6); }
-    .dlg-head{ padding:16px 18px; border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent); font-weight:800; }
+    /* Edit mode decorations */
+    .edit-badges{ position:absolute; inset:8px 8px auto auto; display:flex; gap:6px; }
+    .pill{ font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); background: var(--bg-elev); color:var(--muted); }
+
+    .actions{ position:absolute; inset:auto 8px 8px auto; display:flex; gap:6px; }
+    .icon-btn{ width:34px; height:34px; display:grid; place-items:center; border-radius:10px; border:1px solid color-mix(in oklab, var(--muted) 35%, transparent); background: var(--bg-elev); cursor:pointer; }
+    .icon-btn:hover{ box-shadow: 0 6px 18px -10px var(--ring); }
+
+    .dragging{ opacity:.6; outline: 2px dashed var(--accent); }
+    .drop-target{ outline: 2px dashed var(--accent); outline-offset: 4px; }
+
+    dialog{
+      border:none; border-radius: 16px; padding:0; box-shadow: 0 30px 60px -35px rgba(0,0,0,.6);
+      background: var(--bg-elev); color:var(--text); width:min(520px, 96vw);
+    }
+    .dlg-head{ padding:16px 18px; border-bottom:1px solid color-mix(in oklab, var(--muted) 25%, transparent); font-weight:700; display:flex; justify-content:space-between; align-items:center; }
     .dlg-body{ padding:16px 18px; display:grid; gap:12px; }
     .field{ display:grid; gap:6px; }
     label{ font-size:12px; color:var(--muted); }
-    input[type="text"], input[type="url"]{ width:100%; padding:10px 12px; border-radius:10px; background:var(--bg); color:var(--text);
-      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent); }
-    #iconPreview{ width:64px; height:64px; border-radius:12px; background:var(--card); border:1px solid color-mix(in oklab, var(--muted) 25%, transparent); object-fit:contain; display:none; }
+    input[type="text"], input[type="url"]{
+      width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+    }
     .dlg-foot{ padding:14px 18px; border-top:1px solid color-mix(in oklab, var(--muted) 25%, transparent); display:flex; gap:10px; justify-content:flex-end; }
 
     footer{ color:var(--muted); text-align:center; padding: 10px 0 22px; font-size: 12px; }
+    .search{
+      position: relative; flex: 1 1 260px; min-width: 220px;
+    }
+    .search input{ width:100%; padding:10px 12px 10px 36px; border-radius:10px; background: var(--bg-elev); color: var(--text);
+      border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
+    }
+    .search svg{ position:absolute; left:10px; top:50%; transform: translateY(-50%); opacity:.7 }
+    .hidden{ display:none !important }
   </style>
 </head>
 <body>
   <header>
-    <div class="wrap">
-      <h1>My Start Page</h1>
-      <div class="spacer"></div>
+    <div class="wrap toolbar">
+      <div class="title">
+        <span>🏠</span>
+        <input id="pageTitle" aria-label="Page title" />
+      </div>
       <div class="search" role="search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-        <input id="search" placeholder="Filter links… (Ctrl/⌘+K)" autocomplete="off" />
+        <input id="search" placeholder="Filter links… (⌘/Ctrl+K)" autocomplete="off" />
       </div>
-      <button id="addBtn" class="btn primary">➕ Add</button>
+      <button class="btn" id="addBtn">➕ Add</button>
+      <button class="btn" id="editToggle" aria-pressed="false">✏️ Edit mode</button>
+      <button class="btn" id="exportBtn" title="Export as JSON">⬇️ Export</button>
+      <label class="btn" for="importFile" title="Import from JSON">⬆️ Import<input id="importFile" type="file" accept="application/json" hidden></label>
+      <button class="btn danger" id="resetBtn" title="Restore starter links">⟲ Reset</button>
     </div>
   </header>
 
-  <main>
-    <div class="grid" id="grid"></div>
-  </main>
+  <main class="grid" id="grid" aria-live="polite"></main>
 
+  <footer>Data is stored locally in your browser (localStorage). No servers involved.</footer>
+
+  <!-- Add/Edit Dialog -->
   <dialog id="editor">
     <form method="dialog" id="editorForm">
-      <div class="dlg-head">Add / Edit Link</div>
+      <div class="dlg-head">
+        <span id="dlgTitle">Add Link</span>
+        <button class="btn flat" value="cancel" aria-label="Close">✕</button>
+      </div>
       <div class="dlg-body">
-        <div class="field"><label for="name">Name</label><input id="name" required /></div>
-        <div class="field"><label for="url">URL</label><input id="url" type="url" required placeholder="https://example.com"/></div>
-        <div class="field"><label for="icon">Icon URL (optional)</label><input id="icon" type="text" placeholder="URL or data:image/png;base64,…" /></div>
-        <div class="field"><label>Upload icon</label><input id="iconFile" type="file" accept="image/*" /><img id="iconPreview" alt="Preview"></div>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required maxlength="80" />
+        </div>
+        <div class="field">
+          <label for="url">URL</label>
+          <input id="url" name="url" type="url" inputmode="url" placeholder="https://example.com" required />
+        </div>
       </div>
       <div class="dlg-foot">
         <button class="btn" value="cancel">Cancel</button>
-        <button class="btn primary" value="default">Save</button>
+        <button class="btn primary" id="saveBtn" value="default">Save</button>
       </div>
     </form>
   </dialog>
 
-  <footer>Data stored locally (no servers involved).</footer>
-
   <script>
-(() => {
-  'use strict';
-  const grid = document.getElementById('grid');
-  const addBtn = document.getElementById('addBtn');
-  const editor = document.getElementById('editor');
-  const editorForm = document.getElementById('editorForm');
-  const nameInput = document.getElementById('name');
-  const urlInput = document.getElementById('url');
-  const iconInput = document.getElementById('icon');
-  const iconFile = document.getElementById('iconFile');
-  const iconPreview = document.getElementById('iconPreview');
-  const searchInput = document.getElementById('search');
+  (function(){
+    const STORE_KEY = 'favoriteLinks.v1';
+    const TITLE_KEY = 'favoriteLinks.title';
 
-  const STORE_KEY = 'favoriteLinks.v4';
-  function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(links)); }
-  function load(){
-    try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }
-    catch{ return []; }
-  }
-  let links = load();
-  if(!Array.isArray(links) || links.length===0){
-    links = [
-      { name:'Google', url:'https://www.google.com' },
-      { name:'YouTube', url:'https://www.youtube.com' }
-    ];
-    save();
-  }
+    /** @type {{id:string,name:string,url:string}[]} */
+    let links = [];
+    let editMode = false;
+    let editingId = null;
 
-  const hostname = (u)=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch{ return u; } };
-  function showPreview(src){ if(src){ iconPreview.src = src; iconPreview.style.display='inline-block'; } else { iconPreview.removeAttribute('src'); iconPreview.style.display='none'; } }
-  async function fileToDataURL(file){
-    return await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error('read fail')); fr.readAsDataURL(file); });
-  }
+    const grid = document.getElementById('grid');
+    const editor = document.getElementById('editor');
+    const editorForm = document.getElementById('editorForm');
+    const dlgTitle = document.getElementById('dlgTitle');
+    const nameInput = document.getElementById('name');
+    const urlInput = document.getElementById('url');
+    const addBtn = document.getElementById('addBtn');
+    const editToggle = document.getElementById('editToggle');
+    const exportBtn = document.getElementById('exportBtn');
+    const importFile = document.getElementById('importFile');
+    const resetBtn = document.getElementById('resetBtn');
+    const searchInput = document.getElementById('search');
+    const pageTitle = document.getElementById('pageTitle');
 
-  if(iconFile){ iconFile.addEventListener('change', async (e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const d=await fileToDataURL(f); iconInput.value=d; showPreview(d);} finally{ e.target.value=''; } }); }
-  if(iconInput){ iconInput.addEventListener('input', ()=> showPreview(iconInput.value.trim())); }
+    /* ---------- Utilities ---------- */
+    const uid = () => Math.random().toString(36).slice(2, 9);
+    const norm = s => (s||'').trim();
+    const hostname = (u)=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch{ return u; } };
 
-  function render(filter=''){
-    const q = (filter||'').toLowerCase().trim();
-    grid.innerHTML='';
-    (q? links.filter(l=> (l.name||'').toLowerCase().includes(q) || (l.url||'').toLowerCase().includes(q)) : links)
-    .forEach(link=>{
-      const card=document.createElement('div'); card.className='card';
-      const fav=document.createElement('div'); fav.className='favicon';
-      if(link.icon){ const img=document.createElement('img'); img.alt=''; img.src=link.icon; img.onerror=()=>{ fav.textContent=(link.name||'?').slice(0,1).toUpperCase(); }; fav.appendChild(img); }
-      else{ fav.textContent=(link.name||'?').slice(0,1).toUpperCase(); }
-      const meta=document.createElement('div'); meta.className='meta';
-      const n=document.createElement('div'); n.className='name'; n.textContent=link.name || '';
-      const u=document.createElement('div'); u.className='url'; u.textContent=hostname(link.url || '');
-      meta.append(n,u);
-      card.append(fav,meta);
-      card.addEventListener('click', (e)=>{ if(e.metaKey||e.ctrlKey) window.open(link.url,'_blank'); else window.location.assign(link.url); });
-      grid.appendChild(card);
+    function starterData(){
+      return [
+        { id: uid(), name:'Google', url:'https://www.google.com' },
+        { id: uid(), name:'YouTube', url:'https://www.youtube.com' },
+        { id: uid(), name:'Reddit', url:'https://www.reddit.com' },
+        { id: uid(), name:'Gmail', url:'https://mail.google.com' },
+        { id: uid(), name:'GitHub', url:'https://github.com' },
+        { id: uid(), name:'ChatGPT', url:'https://chat.openai.com' },
+      ];
+    }
+
+    function load(){
+      try{ links = JSON.parse(localStorage.getItem(STORE_KEY)) || starterData(); }
+      catch{ links = starterData(); }
+      pageTitle.value = localStorage.getItem(TITLE_KEY) || 'My Start Page';
+    }
+    function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(links)); }
+    function saveTitle(){ localStorage.setItem(TITLE_KEY, pageTitle.value); }
+
+    function faviconFor(url, name){
+      try{
+        const u = new URL(url);
+        // Using Google favicon service; will gracefully fail if blocked
+        return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(u.origin)}&sz=64`;
+      }catch{
+        return null;
+      }
+    }
+
+    function render(filterText=''){
+      grid.innerHTML = '';
+      const q = norm(filterText).toLowerCase();
+      const list = q ? links.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q)) : links;
+
+      list.forEach((link, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.draggable = editMode; card.dataset.id = link.id; card.setAttribute('aria-label', link.name);
+
+        // Make the whole card act like a link ONLY in view mode
+        if(!editMode){
+          card.setAttribute('role','link');
+          card.tabIndex = 0;
+          card.addEventListener('click', ()=> window.location.assign(link.url));
+          card.addEventListener('auxclick', (e)=>{ if(e.button===1){ window.open(link.url, '_blank'); } });
+          card.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ window.location.assign(link.url); } });
+        }
+
+        const fav = document.createElement('div');
+        fav.className = 'favicon';
+        const favUrl = faviconFor(link.url, link.name);
+        if(favUrl){
+          const img = document.createElement('img');
+          img.src = favUrl; img.alt = ''; img.width=28; img.height=28; img.style.borderRadius='8px';
+          fav.replaceChildren(img);
+        } else {
+          fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const nameEl = document.createElement('div'); nameEl.className='name'; nameEl.textContent = link.name;
+        const urlEl = document.createElement('div'); urlEl.className='url'; urlEl.textContent = hostname(link.url);
+        meta.appendChild(nameEl); meta.appendChild(urlEl);
+
+        card.appendChild(fav); card.appendChild(meta);
+
+        if(editMode){
+          const badges = document.createElement('div'); badges.className='edit-badges';
+          const pill = document.createElement('span'); pill.className='pill'; pill.textContent = `#${idx+1}`; badges.appendChild(pill);
+          card.appendChild(badges);
+
+          const actions = document.createElement('div'); actions.className='actions';
+          const drag = document.createElement('button'); drag.type='button'; drag.className='icon-btn'; drag.title='Drag to reorder'; drag.innerHTML='↕️';
+          const edit = document.createElement('button'); edit.type='button'; edit.className='icon-btn'; edit.title='Edit'; edit.innerHTML='✏️';
+          const del = document.createElement('button'); del.type='button'; del.className='icon-btn'; del.title='Delete'; del.innerHTML='🗑️';
+          actions.append(drag, edit, del); card.appendChild(actions);
+
+          // Prevent any accidental navigation in edit mode
+          card.addEventListener('click', (e)=>{
+            // In edit mode, block card clicks unless the user clicked an action button
+            if(!e.target.closest('.icon-btn')){
+              if(e.preventDefault) e.preventDefault();
+              e.stopPropagation();
+            }
+          });
+
+          edit.addEventListener('click', (e)=>{ e.stopPropagation(); openEditor(link.id); });
+          del.addEventListener('click', (e)=>{ e.stopPropagation(); confirmDelete(link.id); });
+
+          // Drag & drop
+          card.addEventListener('dragstart', (e)=>{
+            card.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', link.id);
+          });
+          card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+          card.addEventListener('dragover', (e)=>{ e.preventDefault(); card.classList.add('drop-target'); e.dataTransfer.dropEffect='move'; });
+          card.addEventListener('dragleave', ()=> card.classList.remove('drop-target'));
+          card.addEventListener('drop', (e)=>{
+            e.preventDefault(); card.classList.remove('drop-target');
+            const fromId = e.dataTransfer.getData('text/plain');
+            const toId = link.id;
+            reorder(fromId, toId);
+          });
+        }
+
+        grid.appendChild(card);
+      });
+
+      // If no results
+      if(list.length === 0){
+        const empty = document.createElement('div');
+        empty.style.opacity = .7; empty.style.textAlign='center'; empty.textContent = 'No links match your search.';
+        grid.appendChild(empty);
+      }
+    }
+
+    function reorder(fromId, toId){
+      if(fromId === toId) return;
+      const fromIdx = links.findIndex(l=>l.id===fromId);
+      const toIdx = links.findIndex(l=>l.id===toId);
+      if(fromIdx < 0 || toIdx < 0) return;
+      const [moved] = links.splice(fromIdx,1);
+      links.splice(toIdx,0,moved);
+      save();
+      render(searchInput.value);
+    }
+
+    function openEditor(id=null){
+      editingId = id;
+      if(id){
+        const l = links.find(x=>x.id===id);
+        nameInput.value = l?.name || '';
+        urlInput.value = l?.url || '';
+        dlgTitle.textContent = 'Edit Link';
+      } else {
+        nameInput.value = '';
+        urlInput.value = '';
+        dlgTitle.textContent = 'Add Link';
+      }
+      editor.showModal();
+      setTimeout(()=> nameInput.focus(), 50);
+    }
+
+    function confirmDelete(id){
+      const l = links.find(x=>x.id===id);
+      if(!l) return;
+      if(confirm(`Delete “${l.name}”?`)){
+        links = links.filter(x=>x.id!==id);
+        save();
+        render(searchInput.value);
+      }
+    }
+
+    /* ---------- Global navigation guard in edit mode ---------- */
+    ['click','auxclick','mousedown','mouseup'].forEach((type)=>{
+      document.addEventListener(type, (e)=>{
+        if(!editMode) return;
+        // Allow toolbar, dialog, and inline icon buttons (edit/delete/drag)
+        const allow = e.target && (
+          e.target.closest('dialog') ||
+          e.target.closest('header') ||
+          e.target.closest('.icon-btn') ||
+          e.target.closest('#editorForm')
+        );
+        if(allow) return;
+
+        // Block clicks on cards while editing
+        const onCard = e.target && e.target.closest && e.target.closest('.card');
+        if(onCard){
+          e.preventDefault();
+          e.stopPropagation();
+          if(typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+        }
+      }, true);
     });
-    if(!grid.children.length){ const empty=document.createElement('div'); empty.style.textAlign='center'; empty.style.opacity=.7; empty.textContent='No links match your search.'; grid.appendChild(empty);} 
-  }
 
-  addBtn?.addEventListener('click', ()=>{ nameInput.value=''; urlInput.value=''; iconInput.value=''; showPreview(''); editor.showModal(); });
-  editorForm?.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const name=(nameInput.value||'').trim();
-    const url=(urlInput.value||'').trim();
-    const icon=(iconInput.value||'').trim();
-    if(!name || !url){ alert('Please enter a name and a valid URL'); return; }
-    try{ new URL(url); }catch{ alert('Please include https:// in the URL'); return; }
-    links.push({ name, url, icon });
-    save(); render(searchInput?.value);
-    editor.close();
-  });
+    /* ---------- Events ---------- */
+    addBtn.addEventListener('click', ()=> openEditor());
 
-  searchInput?.addEventListener('input', ()=> render(searchInput.value));
-  window.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); searchInput?.focus(); searchInput?.select(); } });
+    editToggle.addEventListener('click', ()=>{
+      editMode = !editMode;
+      editToggle.setAttribute('aria-pressed', String(editMode));
+      render(searchInput.value);
+    });
 
-  // Initial paint
-  try{ render(); }catch(err){ console.error(err); alert('Script error: '+err.message); }
-})();
-</script>
+    exportBtn.addEventListener('click', ()=>{
+      const payload = { title: pageTitle.value, links };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'start-page-links.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    importFile.addEventListener('change', async (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if(Array.isArray(data.links)){
+          // sanitize minimally
+          links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string').map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url) }));
+          if(links.length === 0) throw new Error('No usable links in file.');
+          save();
+          if(typeof data.title === 'string'){ pageTitle.value = data.title; saveTitle(); }
+          render(searchInput.value);
+        } else if(Array.isArray(data)){
+          // Allow raw array import
+          links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url) }));
+          save(); render(searchInput.value);
+        } else {
+          alert('Import file format not recognized.');
+        }
+      }catch(err){
+        console.error(err); alert('Import failed: ' + err.message);
+      } finally {
+        importFile.value = '';
+      }
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      if(confirm('Restore starter links? This will replace your current list.')){
+        links = starterData(); save(); render(searchInput.value);
+      }
+    });
+
+    editorForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = norm(nameInput.value);
+      const url = norm(urlInput.value);
+      if(!name || !url) return;
+      try{ new URL(url); }catch{ alert('Please enter a valid URL (include https://)'); return; }
+
+      if(editingId){
+        const idx = links.findIndex(l=>l.id===editingId);
+        if(idx>-1){ links[idx] = { ...links[idx], name, url }; }
+      } else {
+        links.push({ id: uid(), name, url });
+      }
+      save();
+      render(searchInput.value);
+      editingId = null;
+      editor.close();
+    });
+
+    editor.addEventListener('close', ()=>{ editingId = null; });
+
+    searchInput.addEventListener('input', ()=> render(searchInput.value));
+
+    // Command palette style focus
+    window.addEventListener('keydown', (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
+        e.preventDefault(); searchInput.focus(); searchInput.select();
+      }
+    });
+
+    pageTitle.addEventListener('input', saveTitle);
+
+    // First load
+    load();
+    render();
+  })();
+  </script>
 </body>
 </html>
-
