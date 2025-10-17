@@ -94,7 +94,7 @@
     .dlg-body{ padding:16px 18px; display:grid; gap:12px; }
     .field{ display:grid; gap:6px; }
     label{ font-size:12px; color:var(--muted); }
-    input[type="text"], input[type="url"]{
+    input[type="text"], input[type="url"], input[type="file"]{
       width:100%; padding:10px 12px; border-radius:10px; background: var(--bg); color: var(--text);
       border:1px solid color-mix(in oklab, var(--muted) 30%, transparent);
     }
@@ -150,6 +150,11 @@
           <label for="url">URL</label>
           <input id="url" name="url" type="url" inputmode="url" placeholder="https://example.com" required />
         </div>
+        <div class="field">
+          <label for="icon">Icon URL (optional)</label>
+          <input id="icon" name="icon" type="text" placeholder="URL or data:image/png;base64,…" />
+          <input id="iconFile" name="iconFile" type="file" accept="image/*" />
+        </div>
       </div>
       <div class="dlg-foot">
         <button class="btn" value="cancel">Cancel</button>
@@ -163,7 +168,7 @@
     const STORE_KEY = 'favoriteLinks.v1';
     const TITLE_KEY = 'favoriteLinks.title';
 
-    /** @type {{id:string,name:string,url:string}[]} */
+    /** @type {{id:string,name:string,url:string,icon?:string}[]} */
     let links = [];
     let editMode = false;
     let editingId = null;
@@ -174,6 +179,8 @@
     const dlgTitle = document.getElementById('dlgTitle');
     const nameInput = document.getElementById('name');
     const urlInput = document.getElementById('url');
+    const iconInput = document.getElementById('icon');
+    const iconFile = document.getElementById('iconFile');
     const addBtn = document.getElementById('addBtn');
     const editToggle = document.getElementById('editToggle');
     const exportBtn = document.getElementById('exportBtn');
@@ -186,6 +193,12 @@
     const uid = () => Math.random().toString(36).slice(2, 9);
     const norm = s => (s||'').trim();
     const hostname = (u)=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch{ return u; } };
+
+    async function fileToDataURL(file){
+      return await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error('read fail')); fr.readAsDataURL(file); });
+    }
+
+    if(iconFile){ iconFile.addEventListener('change', async (e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const d=await fileToDataURL(f); iconInput.value=d; } finally{ e.target.value=''; } }); }
 
     function starterData(){
       return [
@@ -206,14 +219,11 @@
     function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(links)); }
     function saveTitle(){ localStorage.setItem(TITLE_KEY, pageTitle.value); }
 
-    function faviconFor(url, name){
+    function faviconFor(url){
       try{
         const u = new URL(url);
-        // Using Google favicon service; will gracefully fail if blocked
         return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(u.origin)}&sz=64`;
-      }catch{
-        return null;
-      }
+      }catch{ return null; }
     }
 
     function render(filterText=''){
@@ -226,7 +236,7 @@
         card.className = 'card';
         card.draggable = editMode; card.dataset.id = link.id; card.setAttribute('aria-label', link.name);
 
-        // Make the whole card act like a link ONLY in view mode
+        // View mode navigation
         if(!editMode){
           card.setAttribute('role','link');
           card.tabIndex = 0;
@@ -237,10 +247,12 @@
 
         const fav = document.createElement('div');
         fav.className = 'favicon';
-        const favUrl = faviconFor(link.url, link.name);
+        const favUrl = link.icon || faviconFor(link.url);
         if(favUrl){
           const img = document.createElement('img');
-          img.src = favUrl; img.alt = ''; img.width=28; img.height=28; img.style.borderRadius='8px';
+          img.alt = '';
+          img.addEventListener('error', ()=>{ fav.textContent = (link.name||'?').slice(0,1).toUpperCase(); });
+          img.src = favUrl; // set last so error handler is in place
           fav.replaceChildren(img);
         } else {
           fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
@@ -265,13 +277,9 @@
           const del = document.createElement('button'); del.type='button'; del.className='icon-btn'; del.title='Delete'; del.innerHTML='🗑️';
           actions.append(drag, edit, del); card.appendChild(actions);
 
-          // Prevent any accidental navigation in edit mode
+          // Prevent accidental navigation in edit mode except buttons
           card.addEventListener('click', (e)=>{
-            // In edit mode, block card clicks unless the user clicked an action button
-            if(!e.target.closest('.icon-btn')){
-              if(e.preventDefault) e.preventDefault();
-              e.stopPropagation();
-            }
+            if(!e.target.closest('.icon-btn')){ if(e.preventDefault) e.preventDefault(); e.stopPropagation(); }
           });
 
           edit.addEventListener('click', (e)=>{ e.stopPropagation(); openEditor(link.id); });
@@ -297,7 +305,6 @@
         grid.appendChild(card);
       });
 
-      // If no results
       if(list.length === 0){
         const empty = document.createElement('div');
         empty.style.opacity = .7; empty.style.textAlign='center'; empty.textContent = 'No links match your search.';
@@ -322,10 +329,12 @@
         const l = links.find(x=>x.id===id);
         nameInput.value = l?.name || '';
         urlInput.value = l?.url || '';
+        iconInput.value = l?.icon || '';
         dlgTitle.textContent = 'Edit Link';
       } else {
         nameInput.value = '';
         urlInput.value = '';
+        iconInput.value = '';
         dlgTitle.textContent = 'Add Link';
       }
       editor.showModal();
@@ -346,7 +355,6 @@
     ['click','auxclick','mousedown','mouseup'].forEach((type)=>{
       document.addEventListener(type, (e)=>{
         if(!editMode) return;
-        // Allow toolbar, dialog, and inline icon buttons (edit/delete/drag)
         const allow = e.target && (
           e.target.closest('dialog') ||
           e.target.closest('header') ||
@@ -354,8 +362,6 @@
           e.target.closest('#editorForm')
         );
         if(allow) return;
-
-        // Block clicks on cards while editing
         const onCard = e.target && e.target.closest && e.target.closest('.card');
         if(onCard){
           e.preventDefault();
@@ -391,15 +397,14 @@
         const text = await file.text();
         const data = JSON.parse(text);
         if(Array.isArray(data.links)){
-          // sanitize minimally
-          links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string').map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url) }));
+          links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string')
+                            .map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));
           if(links.length === 0) throw new Error('No usable links in file.');
           save();
           if(typeof data.title === 'string'){ pageTitle.value = data.title; saveTitle(); }
           render(searchInput.value);
         } else if(Array.isArray(data)){
-          // Allow raw array import
-          links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url) }));
+          links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));
           save(); render(searchInput.value);
         } else {
           alert('Import file format not recognized.');
@@ -421,14 +426,15 @@
       e.preventDefault();
       const name = norm(nameInput.value);
       const url = norm(urlInput.value);
+      const icon = norm(iconInput.value);
       if(!name || !url) return;
       try{ new URL(url); }catch{ alert('Please enter a valid URL (include https://)'); return; }
 
       if(editingId){
         const idx = links.findIndex(l=>l.id===editingId);
-        if(idx>-1){ links[idx] = { ...links[idx], name, url }; }
+        if(idx>-1){ links[idx] = { ...links[idx], name, url, icon: icon || '' }; }
       } else {
-        links.push({ id: uid(), name, url });
+        links.push({ id: uid(), name, url, icon: icon || '' });
       }
       save();
       render(searchInput.value);
@@ -440,7 +446,6 @@
 
     searchInput.addEventListener('input', ()=> render(searchInput.value));
 
-    // Command palette style focus
     window.addEventListener('keydown', (e)=>{
       if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
         e.preventDefault(); searchInput.focus(); searchInput.select();
