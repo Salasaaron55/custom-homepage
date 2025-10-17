@@ -266,7 +266,13 @@
           actions.append(drag, edit, del); card.appendChild(actions);
 
           // Prevent any accidental navigation in edit mode
-          card.addEventListener('click', (e)=> e.preventDefault && e.preventDefault());
+          card.addEventListener('click', (e)=>{
+            // In edit mode, block card clicks unless the user clicked an action button
+            if(!e.target.closest('.icon-btn')){
+              if(e.preventDefault) e.preventDefault();
+              e.stopPropagation();
+            }
+          });
 
           edit.addEventListener('click', (e)=>{ e.stopPropagation(); openEditor(link.id); });
           del.addEventListener('click', (e)=>{ e.stopPropagation(); confirmDelete(link.id); });
@@ -359,7 +365,7 @@
       }, true);
     });
 
-    /* ---------- Event
+    /* ---------- Events ---------- */
     addBtn.addEventListener('click', ()=> openEditor());
 
     editToggle.addEventListener('click', ()=>{
