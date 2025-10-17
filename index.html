@@ -152,7 +152,8 @@ links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url)
         </div>
         <div class="field">
           <label for="icon">Icon URL (optional)</label>
-          <input id="icon" name="icon" type="url" inputmode="url" placeholder="https://… or ./icons/mysite.png" />
+          <input id="icon" name="icon" type="text" placeholder="URL, ./icons/mysite.png, or data:image/png;base64,…" />
+          <input id="iconFile" name="iconFile" type="file" accept="image/*" />
         </div>
       </div>
       <div class="dlg-foot">
@@ -186,6 +187,46 @@ links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url)
     const resetBtn = document.getElementById('resetBtn');
     const searchInput = document.getElementById('search');
     const pageTitle = document.getElementById('pageTitle');
+
+    // Utility: convert selected image file to a (resized) data URL for reliable local display
+    async function imageFileToDataURL(file, maxSize=128){
+      const dataUrl = await new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> resolve(fr.result);
+        fr.onerror = ()=> reject(new Error('Failed to read file'));
+        fr.readAsDataURL(file);
+      });
+      try{
+        const img = document.createElement('img');
+        await new Promise((res, rej)=>{ img.onload=res; img.onerror=()=>rej(new Error('Invalid image')); img.src=dataUrl; });
+        const maxDim = Math.max(img.width, img.height);
+        if(maxDim > maxSize){
+          const scale = maxSize / maxDim;
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL('image/png');
+        }
+      }catch{ /* keep original dataUrl if resize fails */ }
+      return dataUrl;
+    }
+
+    // Hook up optional icon file selector if present
+    const iconFile = document.getElementById('iconFile');
+    const iconInput = document.getElementById('icon');
+    if(iconFile){
+      iconFile.addEventListener('change', async (e)=>{
+        const file = e.target.files?.[0];
+        if(!file) return;
+        try{
+          const dataUrl = await imageFileToDataURL(file, 128);
+          iconInput.value = dataUrl;
+        }catch(err){ console.error(err); alert('Icon load failed: ' + (err?.message||err)); }
+        finally{ e.target.value=''; }
+      });
+    }
 
     /* ---------- Utilities ---------- */
     const uid = () => Math.random().toString(36).slice(2, 9);
@@ -245,7 +286,10 @@ links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url)
         const favUrl = link.icon || faviconFor(link.url, link.name);
         if(favUrl){
           const img = document.createElement('img');
-          img.src = favUrl; img.alt = ''; img.width=28; img.height=28; img.style.borderRadius='8px';
+          img.alt='';
+          img.width=28; img.height=28; img.style.borderRadius='8px';
+          img.addEventListener('error', ()=>{ fav.textContent = (link.name||'?').slice(0,1).toUpperCase(); });
+          img.src = favUrl;
           fav.replaceChildren(img);
         } else {
           fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
