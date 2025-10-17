@@ -222,18 +222,9 @@
       const list = q ? links.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q)) : links;
 
       list.forEach((link, idx) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.draggable = editMode; card.dataset.id = link.id; card.setAttribute('aria-label', link.name);
-
-        // Make the whole card act like a link ONLY in view mode
-        if(!editMode){
-          card.setAttribute('role','link');
-          card.tabIndex = 0;
-          card.addEventListener('click', ()=> window.location.assign(link.url));
-          card.addEventListener('auxclick', (e)=>{ if(e.button===1){ window.open(link.url, '_blank'); } });
-          card.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ window.location.assign(link.url); } });
-        }
+        const a = document.createElement('a');
+        a.className = 'card';
+        a.href = link.url; a.target = '_self'; a.draggable = editMode; a.dataset.id = link.id; a.setAttribute('aria-label', link.name);
 
         const fav = document.createElement('div');
         fav.className = 'favicon';
@@ -241,6 +232,53 @@
         if(favUrl){
           const img = document.createElement('img');
           img.src = favUrl; img.alt = ''; img.width=28; img.height=28; img.style.borderRadius='8px';
+          fav.replaceChildren(img);
+        } else {
+          fav.textContent = (link.name||'?').slice(0,1).toUpperCase();
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const nameEl = document.createElement('div'); nameEl.className='name'; nameEl.textContent = link.name;
+        const urlEl = document.createElement('div'); urlEl.className='url'; urlEl.textContent = hostname(link.url);
+        meta.appendChild(nameEl); meta.appendChild(urlEl);
+
+        a.appendChild(fav); a.appendChild(meta);
+
+        if(editMode){
+          const badges = document.createElement('div'); badges.className='edit-badges';
+          const pill = document.createElement('span'); pill.className='pill'; pill.textContent = `#${idx+1}`; badges.appendChild(pill);
+          a.appendChild(badges);
+
+          const actions = document.createElement('div'); actions.className='actions';
+          const drag = document.createElement('button'); drag.type='button'; drag.className='icon-btn'; drag.title='Drag to reorder'; drag.innerHTML='↕️';
+          const edit = document.createElement('button'); edit.type='button'; edit.className='icon-btn'; edit.title='Edit'; edit.innerHTML='✏️';
+          const del = document.createElement('button'); del.type='button'; del.className='icon-btn'; del.title='Delete'; del.innerHTML='🗑️';
+          actions.append(drag, edit, del); a.appendChild(actions);
+
+          a.addEventListener('click', (e)=> e.preventDefault());
+          edit.addEventListener('click', (e)=>{ e.stopPropagation(); openEditor(link.id); });
+          del.addEventListener('click', (e)=>{ e.stopPropagation(); confirmDelete(link.id); });
+
+          // Drag & drop
+          a.addEventListener('dragstart', (e)=>{
+            a.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', link.id);
+          });
+          a.addEventListener('dragend', ()=> a.classList.remove('dragging'));
+          a.addEventListener('dragover', (e)=>{ e.preventDefault(); a.classList.add('drop-target'); e.dataTransfer.dropEffect='move'; });
+          a.addEventListener('dragleave', ()=> a.classList.remove('drop-target'));
+          a.addEventListener('drop', (e)=>{
+            e.preventDefault(); a.classList.remove('drop-target');
+            const fromId = e.dataTransfer.getData('text/plain');
+            const toId = link.id;
+            reorder(fromId, toId);
+          });
+        }
+
+        grid.appendChild(a);
+      });
 
       // If no results
       if(list.length === 0){
