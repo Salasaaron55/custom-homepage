@@ -1,4 +1,4 @@
-links = data.map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));links = data.links.filter(x => x && typeof x.name==='string' && typeof x.url==='string').map(x => ({ id: x.id || uid(), name: norm(x.name), url: norm(x.url), icon: norm(x.icon || '') }));<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
