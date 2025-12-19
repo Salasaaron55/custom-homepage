@@ -1,102 +1,138 @@
-<!doctype html>
+<!-- index.html -->
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Start Page</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Start Page</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
-  <div class="wrap">
-    <header class="header">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>Start Page</h1>
-          <p class="sub">Add links with your own thumbnails • drag to reorder • saves locally</p>
-        </div>
-      </div>
-
-      <div class="controls">
-        <div class="search" role="search">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
-            <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <input id="q" type="text" placeholder="Search links…" />
-          <span class="hint"><kbd>/</kbd> focus</span>
+  <body>
+    <div class="wrap">
+      <header class="header">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Start Page</h1>
+            <p class="sub">
+              Add links with your own thumbnails • drag to reorder • saves
+              locally
+            </p>
+          </div>
         </div>
 
-        <button class="btn primary" id="addBtn">+ Add Link</button>
+        <div class="controls">
+          <div class="search" role="search">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M16.5 16.5 21 21"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <input id="q" type="text" placeholder="Search links…" />
+            <span class="hint"><kbd>/</kbd> focus</span>
+          </div>
 
-        <button class="btn" id="exportBtn" title="Download JSON backup">Export</button>
-        <button class="btn" id="importBtn" title="Import JSON backup">Import</button>
-        <input id="importFile" type="file" accept="application/json" hidden />
+          <button class="btn primary" id="addBtn">+ Add Link</button>
 
-        <button class="btn danger" id="resetBtn" title="Clears all saved links">Reset</button>
-      </div>
-    </header>
+          <button class="btn" id="exportBtn" title="Download JSON backup">
+            Export
+          </button>
+          <button class="btn" id="importBtn" title="Import JSON backup">
+            Import
+          </button>
+          <input id="importFile" type="file" accept="application/json" hidden />
 
-    <p class="note">
-      Thumbnails are uploaded images (ex: screenshots you take). Your links are saved in this browser only.
-    </p>
+          <button
+            class="btn danger"
+            id="resetBtn"
+            title="Clears all saved links"
+          >
+            Reset
+          </button>
+        </div>
+      </header>
 
-    <main>
-      <div class="grid" id="grid" aria-label="Links grid"></div>
-      <div class="empty" id="empty" hidden>
-        No links yet. Click <b>+ Add Link</b> to start.
-      </div>
-    </main>
-  </div>
+      <p class="note">
+        Thumbnails are uploaded images (screenshots you take). Links are saved
+        in this browser only.
+      </p>
 
-  <!-- Modal -->
-  <div class="modal" id="modal" aria-hidden="true">
-    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
-      <div class="dialogHeader">
-        <h2 id="dialogTitle">Add Link</h2>
-        <button class="iconBtn" id="closeModal" title="Close">
-          <svg class="ico" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
+      <main>
+        <div class="grid" id="grid" aria-label="Links grid"></div>
+        <div class="empty" id="empty" hidden>
+          No links yet. Click <b>+ Add Link</b> to start.
+        </div>
+      </main>
+    </div>
 
-      <div class="dialogBody">
-        <div>
-          <label for="title">Title</label>
-          <input id="title" type="text" placeholder="e.g., YouTube" />
+    <!-- Modal -->
+    <div class="modal" id="modal" aria-hidden="true">
+      <div
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialogTitle"
+      >
+        <div class="dialogHeader">
+          <h2 id="dialogTitle">Add Link</h2>
+          <button class="iconBtn" id="closeModal" title="Close">
+            <svg class="ico" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 6l12 12M18 6 6 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
         </div>
 
-        <div>
-          <label for="url">URL</label>
-          <input id="url" type="url" placeholder="https://example.com" />
+        <div class="dialogBody">
+          <div>
+            <label for="title">Title</label>
+            <input id="title" type="text" placeholder="e.g., YouTube" />
+          </div>
+
+          <div>
+            <label for="url">URL</label>
+            <input id="url" type="url" placeholder="https://example.com" />
+          </div>
+
+          <div class="rowFull">
+            <label for="thumbFile">Thumbnail image (upload)</label>
+            <input id="thumbFile" type="file" accept="image/*" />
+            <p class="help">
+              Tip: take a screenshot, crop it, and upload it here.
+            </p>
+          </div>
+
+          <div class="preview" id="preview">
+            <div class="pFallback" id="pFallback">Preview</div>
+            <img id="previewImg" alt="" hidden />
+          </div>
         </div>
 
-        <div class="rowFull">
-          <label for="thumbFile">Thumbnail image (upload)</label>
-          <input id="thumbFile" type="file" accept="image/*" />
-          <p class="help">Tip: take a screenshot, crop it, and upload it here.</p>
-        </div>
-
-        <div class="preview" id="preview">
-          <div class="pFallback" id="pFallback">Preview</div>
-          <img id="previewImg" alt="" hidden />
-        </div>
-      </div>
-
-      <div class="dialogFooter">
-        <div class="leftFooter">
-          <button class="btn danger" id="deleteBtn" hidden>Delete</button>
-        </div>
-        <div class="rightFooter">
-          <button class="btn" id="cancelBtn">Cancel</button>
-          <button class="btn primary" id="saveBtn">Save</button>
+        <div class="dialogFooter">
+          <div class="leftFooter">
+            <button class="btn danger" id="deleteBtn" hidden>Delete</button>
+          </div>
+          <div class="rightFooter">
+            <button class="btn" id="cancelBtn">Cancel</button>
+            <button class="btn primary" id="saveBtn">Save</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>

@@ -1,3 +1,5 @@
+/* styles.css */
+
 :root {
   --bg: #0b0c0f;
   --panel: #12141a;
@@ -217,17 +219,12 @@ kbd {
   overflow: hidden;
   box-shadow: var(--shadow);
   position: relative;
-  cursor: grab;
-  user-select: none;
 }
 @media (prefers-color-scheme: light) {
   .card {
     background: rgba(2, 6, 23, 0.03);
     border: 1px solid rgba(2, 6, 23, 0.08);
   }
-}
-.card:active {
-  cursor: grabbing;
 }
 
 @media (max-width: 980px) {
@@ -254,6 +251,12 @@ kbd {
   .card {
     grid-column: span 12;
   }
+}
+
+.cardLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .thumb {
@@ -352,14 +355,12 @@ kbd {
   opacity: 0.9;
 }
 
-.openLink {
-  position: absolute;
-  inset: 0;
-  text-decoration: none;
-  color: inherit;
+/* Drag handle cursor */
+.dragHandle {
+  cursor: grab;
 }
-.openLink:focus {
-  outline: none;
+.dragHandle:active {
+  cursor: grabbing;
 }
 
 .empty {
@@ -514,7 +515,6 @@ input[type="url"] {
     border-top: 1px solid rgba(2, 6, 23, 0.08);
   }
 }
-
 .leftFooter,
 .rightFooter {
   display: flex;
