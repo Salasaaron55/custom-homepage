@@ -172,13 +172,13 @@ function cardTemplate(item){
   card.dataset.id = item.id;
 
   // Clicking anywhere opens link, but we stop propagation on buttons
-  const a = document.createElement("a");
+/*  const a = document.createElement("a");
   a.className = "openLink";
   a.href = item.url;
   a.target = "_blank";
   a.rel = "noopener noreferrer";
   a.setAttribute("aria-label", `Open ${safeTitle}`);
-  card.appendChild(a);
+  card.appendChild(a);*/
 
   const thumb = document.createElement("div");
   thumb.className = "thumb";
@@ -268,6 +268,40 @@ function cardTemplate(item){
     if (!dragId || dragId === item.id) return;
     reorder(dragId, item.id);
   });
+// --- Click vs drag detection: open link if it's a click (not a drag) ---
+let downX = 0, downY = 0;
+let moved = false;
+const MOVE_PX = 6; // movement threshold in pixels
+
+card.addEventListener("pointerdown", (e) => {
+  // Ignore clicks on buttons (edit, etc.)
+  if (e.target.closest(".actions, .iconBtn, button")) return;
+
+  moved = false;
+  downX = e.clientX;
+  downY = e.clientY;
+});
+
+card.addEventListener("pointermove", (e) => {
+  if (moved) return;
+
+  const dx = Math.abs(e.clientX - downX);
+  const dy = Math.abs(e.clientY - downY);
+
+  if (dx > MOVE_PX || dy > MOVE_PX) {
+    moved = true;
+  }
+});
+
+card.addEventListener("click", (e) => {
+  // Ignore clicks on buttons
+  if (e.target.closest(".actions, .iconBtn, button")) return;
+
+  // If it was a drag, do nothing
+  if (moved || dragId) return;
+
+  window.open(item.url, "_blank", "noopener,noreferrer");
+});
 
   return card;
 }
